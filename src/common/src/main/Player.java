@@ -6,10 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class scene extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
+public class Player extends Application {
+    public static void main(String[] args){
+        // RemoteSpace remotespace =
     }
 
     @Override
@@ -24,11 +23,6 @@ public class scene extends Application {
         Scene scene = new Scene(layout, 300, 250);
         primaryStage.setScene(scene);
         primaryStage.show();
-
-
-
-
-
-
     }
+
 }
