@@ -8,7 +8,12 @@ import javafx.stage.Stage;
 
 public class Player extends Application {
     public static void main(String[] args){
-        // RemoteSpace remotespace =
+        launch(args);
+
+
+
+
+
     }
 
     @Override
