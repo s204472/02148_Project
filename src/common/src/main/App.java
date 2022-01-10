@@ -28,17 +28,36 @@ public class App {
 
 
 		try {
-			idSpace.put(0);
 			idSpace.put(1);
+			idSpace.put(2);
 		} catch (Exception e){}
 
-
-		while(true){
-			//Inside this while loop we will place ships
-
-
+		// Serve id's
+		for (int i = 0; i < 2; i++){
+			try {
+				Object[] objects = playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
+				System.out.println(objects[0] + (objects[1].toString()) + " connected");
+			} catch (InterruptedException e) {}
 		}
 
+		// Read shots
+		while(true){
+			// TODO: implement game start.
+			try {
+				Object[] res = playerToServer.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+				int id = (int) res[0], x = (int) res[1], y = (int) res[2];
+				System.out.println("U" + id + ": (" + x + "," + y + ")");
+				serverToPlayer.put(1, x, y, isHit(id, x, y) ? 1 : 0);
+				serverToPlayer.put(2, x, y, isHit(id, x, y) ? 1 : 0);
+				// TODO: game logic
+
+			} catch (InterruptedException e) {}
+		}
+
+	}
+	// TODO: delete
+	public static boolean isHit(int id, int x, int y){
+		return true;
 	}
 
 }
