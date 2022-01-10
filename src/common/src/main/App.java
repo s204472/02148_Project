@@ -2,147 +2,97 @@ package common.src.main;
 
 import org.jspace.*;
 
-
 public class App {
-	public static void main(String[] args) {
+	private static int currentTurn;
+	private static PlayerApp workingPlayer;
+	private static Object[] workingPlayerObject;
+	private static Space idSpace;
+	private static Space serverToPlayer;
+	private static Space playerToServer;
+	private static int workingId;
 
 
+	public static void main(String[] argv) throws InterruptedException {
+		currentTurn = 0;
 		String port = "9000";
 		String host = "localhost";
-
 		String uri = "tcp://" + host + ":" + port + "/?conn";
-
 		SpaceRepository repo = new SpaceRepository();
 		repo.addGate(uri);
-		Space serverToPlayer = new SequentialSpace();
-		Space playerToServer = new SequentialSpace();
-		Space id = new SequentialSpace();
-
-		try {
-			id.put(1);
-			id.put(2);
-		} catch (InterruptedException e) {}
-
+		serverToPlayer = new SequentialSpace();
+		playerToServer = new SequentialSpace();
+		idSpace = new SequentialSpace();
 		repo.add("serverToPlayer", serverToPlayer);
 		repo.add("playerToServer", playerToServer);
-		repo.add("id", id);
+		repo.add("id", idSpace);
+
+
+		try {
+			idSpace.put(0);
+			idSpace.put(1);
+		} catch (Exception e){}
 
 
 		while(true){
-			try {
+			//Inside this while loop we will place ships
 
-				Object[] objects = playerToServer.get(new FormalField(String.class), new FormalField(Integer.class));
-				System.out.println(objects[0] + (objects[1].toString()));
 
-				//here the board is created
-			} catch (InterruptedException e) {}
 		}
+
 	}
+
 }
 
 class Game {
 	private int size;
-	private GameObjects[][] board;
-	private boolean yourTurn = true;
-	private boolean isHit;
-	private int shipsLeft;
-	private boolean gameOver;
-	private boolean ready;
 
 	public Game(int size) {
 		this.size = size;
-		this.board = new GameObjects[size][size];
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				board[x][y] = new Field();
-			}
-		}
 	}
 
-	public void printBoard(){
-		for(int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				if (board[i][j] instanceof Field) {
-					System.out.print("X ");
-				} else if (board[i][j] instanceof Ship) {
-					if (((Ship)board[i][j]).getShipHit()) {
-						System.out.print("H ");
-					} else {
-						System.out.print("S ");
-					}
-				}
-
-			}
-			System.out.println();
-		}
+	public int getSize() {
+		return size;
 	}
 
-	//Implement out of bounce detection
-	public void placeShips(int x, int y, int shipLength, boolean orientation) {
-
-		if(!ready){
-			shipsLeft += shipLength;
-
-			for (int i = 0; i < shipLength; i++) {
-				if (orientation) {
-					if (!(x < 0 || x+shipLength >= size)){
-						board[i + x][y] = new Ship(shipLength);
-					} else {
-						System.out.println("Ship out of bounce");
-						break;
-					}
-
+	public void placeShips(int x, int y, int shipLength, boolean orientation, GameBoard board) {
+		for (int i = 0; i < shipLength; i++) {
+			if (orientation) {
+				if (!(x < 0 || x + shipLength >= board.getSize())) {
+					board.placeShip(x + i, y);
 				} else {
-					if(!(y < 0 || y+shipLength>= size)){
-						board[x][i + y] = new Ship(shipLength);
-					} else {
-						System.out.println("Ship out of bounce");
-						break;
-					}
+					System.out.println("Ship out of bounce");
+					break;
 				}
-			}
-		} else {
-			System.out.println("You can't place ships after you're ready");
-		}
-	}
-
-
-	public boolean shooting(int x, int y) {
-		if(ready) {
-			if (board[x][y] instanceof Ship) {
-				((Ship) board[x][y]).setShipHit();
-				shipsLeft--;
-				if (gameOver()){
-					System.exit(0);
-				}
-				isHit = true;
 			} else {
-				yourTurn = false;
-				System.out.println("You missed");
+				if (!(y < 0 || y + shipLength >= board.getSize())) {
+					board.placeShip(x + i, y);
+				} else {
+					System.out.println("Ship out of bounce");
+					break;
+				}
 			}
-			return isHit;
+		}
+	}
+	//Implement next players turn
+	public boolean shooting(int x, int y, GameBoard board) {
+		if (board.getField(x, y) instanceof Ship && !((Ship) board.getField(x, y)).getHit()) {
+			((Ship) board.getField(x, y)).toggleHit();
+
+			return true;
+		} else if (board.getField(x, y) instanceof Field && !((Field) board.getField(x, y)).getHit()){
+			((Field) board.getField(x, y)).toggleHit();
+			return false;
 		} else {
-			System.out.println("Player is not ready");
-			return isHit;
+			return false; //Dont switch to next player
 		}
-
 	}
 
-	//Move this to the individual player
-	public void setReady(){
-		ready = true;
-	}
 
-	public boolean gameOver(){
-		if(shipsLeft == 0){
-			gameOver = true;
-			System.out.println("Game Over!");
-		}
-		return gameOver;
-	}
+	public boolean gameover(GameBoard board){return board.isGameover();}
+
+
 
 }
-
 
 
 
