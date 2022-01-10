@@ -2,18 +2,13 @@ package common.src.main;
 
 import org.jspace.*;
 
-
 public class App {
 	public static void main(String[] args) {
-
-
 		String port = "9000";
 		String host = "localhost";
 
-		String uri = "tcp://" + host + ":" + port + "/?conn";
-
 		SpaceRepository repo = new SpaceRepository();
-		repo.addGate(uri);
+		repo.addGate("tcp://" + host + ":" + port + "/?conn");
 
 		Space serverToPlayer = new SequentialSpace();
 		Space playerToServer = new SequentialSpace();
@@ -28,7 +23,6 @@ public class App {
 		repo.add("playerToServer", playerToServer);
 		repo.add("id", idSpace);
 
-
 		// Serve id's
 		for (int i = 0; i < 2; i++){
 			try {
@@ -36,22 +30,26 @@ public class App {
 				System.out.println(objects[0] + (objects[1].toString()) + " connected");
 			} catch (InterruptedException e) {}
 		}
+
 		// Read shots
 		while(true){
+			// TODO: implement game start.
 			try {
 				Object[] res = playerToServer.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
 				int id = (int) res[0], x = (int) res[1], y = (int) res[2];
 				System.out.println("U" + id + ": (" + x + "," + y + ")");
-				System.out.println("Put on server test1");
-				serverToPlayer.put(id, x, y, isHit(id, x, y) ? 1 : 0);
+				serverToPlayer.put(1, x, y, isHit(id, x, y) ? 1 : 0);
+				serverToPlayer.put(2, x, y, isHit(id, x, y) ? 1 : 0);
+				// TODO: game logic
 
 			} catch (InterruptedException e) {}
-
 		}
 	}
+	// TODO: delete
 	public static boolean isHit(int id, int x, int y){
 		return true;
 	}
+
 }
 
 class Game {
