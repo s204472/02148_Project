@@ -32,9 +32,9 @@ public class Controller implements Initializable {
         String port = "9000"; String host = "localhost";
 
         try {
-            idSpace        = new RemoteSpace("tcp://" + host + ":" + port + "/playerToServer?conn");
+            idSpace        = new RemoteSpace("tcp://" + host + ":" + port + "/id?conn");
             serverToPlayer = new RemoteSpace("tcp://" + host + ":" + port + "/serverToPlayer?conn");
-            playerToServer = new RemoteSpace("tcp://" + host + ":" + port + "/id?conn");
+            playerToServer = new RemoteSpace("tcp://" + host + ":" + port + "/playerToServer?conn");
 
             try {
                 id = (int) idSpace.get(new FormalField(Integer.class))[0];
