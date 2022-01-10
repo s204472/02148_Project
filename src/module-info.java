@@ -8,5 +8,6 @@ module jSpace.Project {
     requires javafx.swing;
     requires java.sql;
 
+
     opens common.src.main;
 }

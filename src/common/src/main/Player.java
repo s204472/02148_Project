@@ -1,54 +1,69 @@
 package common.src.main;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
 import org.jspace.*;
 import java.io.IOException;
 
+public class Player {
+    private static int id;
+    private static RemoteSpace idSpace;
+    private static RemoteSpace serverToPlayer;
+    private static RemoteSpace playerToServer;
 
-public class Player extends Application {
-    public static void main(String[] args){
-        //launch(args);
-
+    public static void main(String[] args) {
         String port = "9000";
         String host = "localhost";
 
-        String serverToPlayerURI = "tcp://" + host + ":" + port + "/serverToPlayer?conn";
         String playerToServerURI = "tcp://" + host + ":" + port + "/playerToServer?conn";
+        String serverToPlayerURI = "tcp://" + host + ":" + port + "/serverToPlayer?conn";
         String idURI = "tcp://" + host + ":" + port + "/id?conn";
+        Ui ui = new Ui();
+        new Thread(ui).start();
 
-        int id;
         try {
-            RemoteSpace idSpace = new RemoteSpace(idURI);
-            RemoteSpace serverToPlayer = new RemoteSpace(serverToPlayerURI);
-            RemoteSpace playerToServer = new RemoteSpace(playerToServerURI);
+            idSpace = new RemoteSpace(idURI);
+            serverToPlayer = new RemoteSpace(serverToPlayerURI);
+            playerToServer = new RemoteSpace(playerToServerURI);
+
 
             try {
-                Object[] res = idSpace.get(new FormalField(Integer.class));
-                id = (int) res[0];
-                playerToServer.put("here is a message from a user", id);
+                id = (int) idSpace.get(new FormalField(Integer.class))[0];
+                playerToServer.put("User", id);
 
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
+
+        new Thread(new ResponseListener(serverToPlayer, id, ui)).start();
     }
 
+    public static void getClick(int x, int y) {
+        System.out.println("U" + id + ": (" + x + "," + y + ")");
+        try {
+            playerToServer.put(id, x, y);
+        } catch (InterruptedException e) {}
+    }
+}
 
+class ResponseListener implements Runnable {
+    RemoteSpace s;
+    Ui ui;
+    int id;
 
+    public ResponseListener(RemoteSpace s, int id, Ui ui){
+        this.s = s;
+        this.id = id;
+        this.ui = ui;
+
+    }
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Hello World");
-        Button button = new Button();
-        button.setText("click me");
-
-        StackPane layout = new StackPane();
-        layout.getChildren().add(button);
-
-        Scene scene = new Scene(layout, 300, 250);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    public void run() {
+        while(true){
+            try {
+                System.out.println("Waiting");
+                Object[] res = s.get(new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+                System.out.println("(" + res[1] + "," + res[2] + ") " + res[3]);
+                ui.setHit();
+            } catch (InterruptedException e) {}
+        }
     }
 }
 
