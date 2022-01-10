@@ -9,6 +9,7 @@ public class Player {
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
 
+
     public static void main(String[] args) {
         String port = "9000";
         String host = "localhost";
