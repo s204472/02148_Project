@@ -3,17 +3,11 @@ package common.src.main;
 import org.jspace.*;
 
 public class App {
-	private static int currentTurn;
-	private static PlayerApp workingPlayer;
-	private static Object[] workingPlayerObject;
 	private static Space idSpace;
 	private static Space serverToPlayer;
 	private static Space playerToServer;
-	private static int workingId;
-
 
 	public static void main(String[] argv) throws InterruptedException {
-		currentTurn = 0;
 		String port = "9000";
 		String host = "localhost";
 		String uri = "tcp://" + host + ":" + port + "/?conn";
@@ -22,10 +16,10 @@ public class App {
 		serverToPlayer = new SequentialSpace();
 		playerToServer = new SequentialSpace();
 		idSpace = new SequentialSpace();
+
 		repo.add("serverToPlayer", serverToPlayer);
 		repo.add("playerToServer", playerToServer);
 		repo.add("id", idSpace);
-
 
 		try {
 			idSpace.put(1);
@@ -40,14 +34,11 @@ public class App {
 			} catch (InterruptedException e) {}
 		}
 
-		// placement of ships
-		for (int i = 0; i < 2; i++) {
-			try {
-				serverToPlayer.put("placeShips", i+1);
-			} catch (InterruptedException e) {}
-		}
-		playerToServer.get(new ActualField("ready"), new ActualField( 1));
-		playerToServer.get(new ActualField("ready"), new ActualField( 2));
+		System.out.println("Players connected");
+		serverToPlayer.put("Placeships");
+
+		playerToServer.get(new ActualField("Board"), new ActualField(1), new FormalField(GameBoard.class));
+		playerToServer.get(new ActualField("Board"), new ActualField(2), new FormalField(GameBoard.class));
 
 		// Read shots
 		while(true){

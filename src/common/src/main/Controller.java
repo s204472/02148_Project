@@ -15,8 +15,11 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 public class Controller implements Initializable {
-    public static final int SIZE = 4;
-    public static boolean placeShips = true;
+    public static final int SIZE = 8;
+    public static boolean shipsPlaced = false;
+    public static boolean rotated = false;
+    public static GameBoard board = new GameBoard(SIZE);
+    public static int shipNumber = 2;
 
     @FXML
     public GridPane gameGrid;
@@ -40,12 +43,14 @@ public class Controller implements Initializable {
             try {
                 id = (int) idSpace.get(new FormalField(Integer.class))[0];
                 playerToServer.put("User", id);
+                serverToPlayer.query(new ActualField("Placeships"));
+
+                genButtons(SIZE, SIZE);
+
+                //serverToPlayer.get(new ActualField("Start"));
 
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
-
-
-        genButtons(SIZE, SIZE);
         startListener();
     }
 
@@ -70,16 +75,24 @@ public class Controller implements Initializable {
     @FXML
     void handleClick(int x, int y) {
         try {
-            if(placeShips) {
-                buttons[x][y].setStyle("-fx-background-color: Blue");
-                buttons[x][y+1].setStyle("-fx-background-color: Blue");
-            }
-            else {
+            if(!shipsPlaced) {
+                shipNumber = setShip(x, y, shipNumber);
+                if (shipNumber == 6) {
+                    playerToServer.put("Board", id, board);
+                    shipsPlaced = true;
+                }
+            } else {
                 System.out.println("Shot by player on " + x + ":" + y);
                 playerToServer.put(id, x, y);
             }
         } catch (InterruptedException e) {}
     }
+
+    @FXML
+    void rotate() {
+        rotated = !rotated;
+    }
+
     public void startListener(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
@@ -102,5 +115,34 @@ public class Controller implements Initializable {
     public void setHit(int x, int y){
         buttons[x][y].setStyle("-fx-background-color: MediumSeaGreen");
     }
+
+    public int setShip(int x, int y, int i) {
+        if (rotated) {
+            if(SIZE <= x + i) {
+                System.out.printf("ship out of bound");
+                return i;
+            }
+            else {
+                for (int j = 0; j < i; j++) {
+                    board.placeShip(x + j, y);
+                    buttons[x + j][y].setStyle("-fx-background-color: blue");
+                }
+                return i + 1;
+            }
+        } else {
+            if(SIZE <= y + i) {
+                System.out.printf("ship out of bound");
+                return i;
+            }
+            else {
+                for (int j = 0; j < i; j++) {
+                    board.placeShip(x, y + j);
+                    buttons[x][y+j].setStyle("-fx-background-color: blue");
+                }
+                return i + 1;
+            }
+        }
+    }
 }
+
 
