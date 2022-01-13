@@ -40,6 +40,15 @@ public class App {
 			} catch (InterruptedException e) {}
 		}
 
+		// placement of ships
+		for (int i = 0; i < 2; i++) {
+			try {
+				serverToPlayer.put("placeShips", i+1);
+			} catch (InterruptedException e) {}
+		}
+		playerToServer.get(new ActualField("ready"), new ActualField( 1));
+		playerToServer.get(new ActualField("ready"), new ActualField( 2));
+
 		// Read shots
 		while(true){
 			// TODO: implement game start.
@@ -59,7 +68,6 @@ public class App {
 	public static boolean isHit(int id, int x, int y){
 		return true;
 	}
-
 }
 
 class Game {

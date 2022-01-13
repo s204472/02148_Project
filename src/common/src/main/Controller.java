@@ -16,6 +16,7 @@ import org.jspace.RemoteSpace;
 
 public class Controller implements Initializable {
     public static final int SIZE = 4;
+    public static boolean placeShips = true;
 
     @FXML
     public GridPane gameGrid;
@@ -43,9 +44,16 @@ public class Controller implements Initializable {
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
 
+
         genButtons(SIZE, SIZE);
         startListener();
     }
+
+    public void genShips(int length, int width){
+
+
+    }
+    
     public void genButtons(int x, int y){
         buttons = new Button[x][y];
         for (int i = 0; i < x; i++) {
@@ -62,10 +70,15 @@ public class Controller implements Initializable {
     @FXML
     void handleClick(int x, int y) {
         try {
-            System.out.println("Shot by player on " + x + ":" + y);
-            playerToServer.put(id, x, y);
+            if(placeShips) {
+                buttons[x][y].setStyle("-fx-background-color: Blue");
+                buttons[x][y+1].setStyle("-fx-background-color: Blue");
+            }
+            else {
+                System.out.println("Shot by player on " + x + ":" + y);
+                playerToServer.put(id, x, y);
+            }
         } catch (InterruptedException e) {}
-
     }
     public void startListener(){
         Task<Integer> task = new Task<Integer>() {
