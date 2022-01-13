@@ -47,6 +47,5 @@ public class Game {
         }
     }
 
-
     public boolean gameover(GameBoard board){ return board.isGameover(); }
 }
