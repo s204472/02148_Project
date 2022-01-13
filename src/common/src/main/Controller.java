@@ -118,8 +118,8 @@ public class Controller implements Initializable {
 
     public int setShip(int x, int y, int i) {
         if (rotated) {
-            if(SIZE <= x + i) {
-                System.out.printf("ship out of bound");
+            if(SIZE < x + i || board.shipInTheway(x, y, i, rotated)) {
+                System.out.println("ship out of bound or ships overlap");
                 return i;
             }
             else {
@@ -130,8 +130,8 @@ public class Controller implements Initializable {
                 return i + 1;
             }
         } else {
-            if(SIZE <= y + i) {
-                System.out.printf("ship out of bound");
+            if(SIZE < y + i || board.shipInTheway(x, y, i, rotated)) {
+                System.out.println("ship out of bound or ships overlap");
                 return i;
             }
             else {
