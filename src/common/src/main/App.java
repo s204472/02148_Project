@@ -12,6 +12,7 @@ public class App {
 	private static int workingId;
 
 
+
 	public static void main(String[] argv) throws InterruptedException {
 		currentTurn = 0;
 		String port = "9000";
@@ -22,9 +23,11 @@ public class App {
 		serverToPlayer = new SequentialSpace();
 		playerToServer = new SequentialSpace();
 		idSpace = new SequentialSpace();
+
 		repo.add("serverToPlayer", serverToPlayer);
 		repo.add("playerToServer", playerToServer);
 		repo.add("id", idSpace);
+
 
 
 		try {
@@ -39,6 +42,12 @@ public class App {
 				System.out.println(objects[0] + (objects[1].toString()) + " connected");
 			} catch (InterruptedException e) {}
 		}
+
+		System.out.println("Players connected");
+		serverToPlayer.put("Placeships");
+
+		playerToServer.get(new ActualField("Board"), new ActualField(1), new FormalField(GameBoard.class));
+		playerToServer.get(new ActualField("Board"), new ActualField(2), new FormalField(GameBoard.class));
 
 		// Read shots
 		while(true){
