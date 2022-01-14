@@ -15,7 +15,7 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 public class Controller implements Initializable {
-    public static final int SIZE = 8;
+    public static final int SIZE = 10;
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board = new GameBoard(SIZE);
@@ -35,6 +35,7 @@ public class Controller implements Initializable {
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
     private boolean turn = false;
+    private boolean gameover = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
@@ -57,7 +58,7 @@ public class Controller implements Initializable {
         waitForOpnBoard();
         listenForTurn();
         listenForShots();
-
+        listenForGameover();
     }
 
 
@@ -86,7 +87,6 @@ public class Controller implements Initializable {
         }
     }
 
-
     @FXML
     void handlePlayerClick(int x, int y) {
         try {
@@ -102,7 +102,7 @@ public class Controller implements Initializable {
     @FXML
     void handleOpnClick(int x, int y) {
         try {
-            if (this.turn){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
+            if (this.turn && !gameover){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
                 System.out.println("Shot by player on " + x + ":" + y);
                 playerToServer.put("Shot", id, x, y);
                 this.turn = false;
@@ -150,6 +150,22 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
+    public void listenForGameover(){
+        Task<Integer> task = new Task<Integer>() {
+            @Override protected Integer call() throws Exception {
+                serverToPlayer.query(new ActualField("Gameover"));
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        setGameover();
+                    }
+                });
+                return 1;
+            }
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
+    }
 
     public void listenForShots(){
         Task<Integer> task = new Task<Integer>() {
@@ -184,11 +200,14 @@ public class Controller implements Initializable {
     public void setOpnHit(int x, int y, boolean hit){
         oButtons[x][y].setStyle(hit ? "-fx-background-color: Red" : "-fx-background-color: Blue");
     }
+    public void setGameover(){
+        gameover = true;
+    }
     public void setTurn(){ this.turn = true; }
     public int setShip(int x, int y, int i) {
         if (rotated) {
-            if(SIZE <= x + i) {
-                System.out.printf("ship out of bound");
+            if(SIZE < x + i || board.shipInTheway(x, y, i, rotated)) {
+                System.out.println("ship out of bound");
                 return i;
             }
             else {
@@ -199,8 +218,8 @@ public class Controller implements Initializable {
                 return i + 1;
             }
         } else {
-            if(SIZE <= y + i) {
-                System.out.printf("ship out of bound");
+            if(SIZE < y + i || board.shipInTheway(x, y, i, rotated)) {
+                System.out.println("ship out of bound or ships overlap");
                 return i;
             }
             else {
