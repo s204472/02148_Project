@@ -99,6 +99,7 @@ public class Controller implements Initializable {
             }
         } catch (InterruptedException e) {}
     }
+
     @FXML
     void handleOpnClick(int x, int y) {
         try {
@@ -195,10 +196,21 @@ public class Controller implements Initializable {
         th.start();
     }
     public void setPlayerHit(int x, int y, boolean hit){
-        pButtons[x][y].setStyle(hit ? "-fx-background-color: Red" : "-fx-background-color: Yellow");
+        if (hit){
+            pButtons[x][y].setStyle("-fx-background-color: #913133");
+
+        } else {
+            pButtons[x][y].setStyle("-fx-background-color: #7cbef4");
+
+        }
+
     }
     public void setOpnHit(int x, int y, boolean hit){
-        oButtons[x][y].setStyle(hit ? "-fx-background-color: Red" : "-fx-background-color: Blue");
+        if (hit){
+            oButtons[x][y].setStyle("-fx-background-color: #f2686a");
+        } else {
+            oButtons[x][y].setStyle("-fx-background-color: #7cbef4");
+        }
     }
     public void setGameover(){
         gameover = true;
@@ -213,7 +225,8 @@ public class Controller implements Initializable {
             else {
                 for (int j = 0; j < i; j++) {
                     board.placeShip(x + j, y);
-                    pButtons[x + j][y].setStyle("-fx-background-color: blue");
+                    showShip(x + j, y);
+
                 }
                 return i + 1;
             }
@@ -225,11 +238,15 @@ public class Controller implements Initializable {
             else {
                 for (int j = 0; j < i; j++) {
                     board.placeShip(x, y + j);
-                    pButtons[x][y+j].setStyle("-fx-background-color: blue");
+                    showShip(x, y + j);
                 }
                 return i + 1;
             }
         }
+    }
+    public void showShip(int x, int y){
+        pButtons[x][y].setStyle("-fx-background-color: #4f4f4f");
+
     }
 }
 
