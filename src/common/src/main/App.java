@@ -37,28 +37,44 @@ public class App {
 		System.out.println("Players connected");
 		serverToPlayer.put("Placeships");
 
+		// TODO: SET BOARDS
 		playerToServer.get(new ActualField("Board"), new ActualField(1), new FormalField(GameBoard.class));
 		playerToServer.get(new ActualField("Board"), new ActualField(2), new FormalField(GameBoard.class));
 
+		serverToPlayer.put("Start");
+
 		// Read shots
+		Object[] res;
+		int id, x, y;
 		while(true){
-			// TODO: implement game start.
 			try {
-				Object[] res = playerToServer.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
-				int id = (int) res[0], x = (int) res[1], y = (int) res[2];
-				System.out.println("U" + id + ": (" + x + "," + y + ")");
-				serverToPlayer.put(1, x, y, isHit(id, x, y) ? 1 : 0);
-				serverToPlayer.put(2, x, y, isHit(id, x, y) ? 1 : 0);
-				// TODO: game logic
+				// Player 1
+				serverToPlayer.put("Turn", 1);
+				res = playerToServer.get(new ActualField("Shot"), new ActualField(1), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
+				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
+
+				serverToPlayer.put("Shot", 1, 1, x, y, isHit(id, x, y)); // Shot by player 1, message for player 1, x, y, was a hit?
+				serverToPlayer.put("Shot", 1, 2, x, y, isHit(id, x, y)); // Shot by player 1, message for player 2, x, y, was a hit?
+				// TODO: UPDATE BOARDS
+
+
+				// Player 2
+				serverToPlayer.put("Turn", 2);
+				res = playerToServer.get(new ActualField("Shot"), new ActualField(2), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
+				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
+
+				serverToPlayer.put("Shot", 2, 1, x, y, isHit(id, x, y));
+				serverToPlayer.put("Shot", 2, 2, x, y, isHit(id, x, y));
+				// TODO: UPDATE BOARDS
 
 			} catch (InterruptedException e) {}
 		}
-
 	}
 	// TODO: delete
 	public static boolean isHit(int id, int x, int y){
 		return true;
 	}
+
 }
 
 
