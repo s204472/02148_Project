@@ -14,23 +14,39 @@ public class GameBoard {
         }
     }
 
-    public int getSize() { return size; }
-
-    public Field[][] getBoard(){ return board; }
-
-    public Field getField(int x, int y){ return board[x][y]; }
-
     public void placeShip(int x, int y){ board[x][y].setShip(); }
 
     public boolean isGameover() {
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
-                if(board[i][j].isShip() && !(board[i][j]).getHit()){
+                if(board[i][j].isShip() && !board[i][j].getHit()){
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    public boolean setHit(int x, int y){
+        return board[x][y].setHit();
+    }
+
+    public boolean shipInTheway(int x, int y, int shipLength, boolean rotated) {
+        boolean inTheWay = false;
+        for(int i = 0; i < shipLength; i++){
+            if(rotated) {
+                inTheWay = board[x + i][y].isShip();
+                if(inTheWay){
+                    return inTheWay;
+                }
+            } else {
+                inTheWay = board[x][y + i].isShip();
+                if(inTheWay){
+                    return inTheWay;
+                }
+            }
+        }
+        return inTheWay;
     }
 }
 

@@ -9,8 +9,9 @@ public class Field {
         this.isShip = false;
     }
 
-    public void toggleHit(){
+    public boolean setHit(){
         this.hit = true;
+        return this.isShip;
     }
     public boolean getHit(){
         return this.hit;
