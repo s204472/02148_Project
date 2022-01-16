@@ -72,9 +72,6 @@ public class App {
 				if(b1.isGameover()){
 					serverToPlayer.put("Gameover");
 				}
-
-
-
 			} catch (InterruptedException e) {}
 		}
 	}
