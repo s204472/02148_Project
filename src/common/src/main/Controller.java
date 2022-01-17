@@ -2,6 +2,7 @@ package common.src.main;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -15,26 +16,31 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 public class Controller implements Initializable {
-    public static final int SIZE = 10;
+    public static int SIZE;
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
-    public static GameBoard board = new GameBoard(SIZE);
+    public static GameBoard board;
     public static int shipNumber = 2;
 
     @FXML
     public GridPane pGrid;
     @FXML
-    public GridPane oGrid;
+    public GridPane[] opponentBoards;
+    @FXML
+    public GridPane opponentBoardSpace;
 
     private Button[][] pButtons;
-    private Button[][] oButtons;
+    private Button[][][] oButtons;
 
     private static int id;
+    private static int numberOfPlayers;
     private static RemoteSpace idSpace;
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
     private boolean turn = false;
-    private boolean gameover = false;
+    private boolean gameOver = false;
+    private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
@@ -46,18 +52,21 @@ public class Controller implements Initializable {
             playerToServer = new RemoteSpace("tcp://" + host + ":" + port + "/playerToServer?conn");
 
             try {
-                id = (int) idSpace.get(new FormalField(Integer.class))[0];
+                Object[] idAndPlayersAndSize = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+                id = (int) idAndPlayersAndSize[0];
+                numberOfPlayers = (int) idAndPlayersAndSize[1];
+                SIZE = (int)idAndPlayersAndSize[2];
                 playerToServer.put("User", id);
-                serverToPlayer.query(new ActualField("Placeships"));
+                board = new GameBoard(SIZE);
+                opponentBoards = new GridPane[numberOfPlayers];
+                serverToPlayer.query(new ActualField("Place ships"));
                 genPlayerBoard(SIZE, SIZE);
-
-
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
         waitForOpnBoard();
         listenForTurn();
         listenForShots();
-        listenForGameover();
+        listenForGameOver();
     }
 
 
@@ -73,15 +82,32 @@ public class Controller implements Initializable {
             }
         }
     }
-    public void genOpnBoard(int x, int y){
-        oButtons = new Button[x][y];
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                oButtons[i][j] = new Button();
-                int u = i;
-                int v = j;
-                oButtons[i][j].setOnAction(event -> handleOpnClick(u, v));
-                oGrid.add(oButtons[i][j], i, j);
+
+    public void genOpnBoard(int size, int numberOfPlayers){
+        oButtons = new Button[numberOfPlayers][size][size];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (i == id) {
+                continue;
+            } else {
+                otherPlayers.add(i);
+            }
+        }
+        int m = 0;
+        for (int i : otherPlayers)  {
+            opponentBoards[i] = new GridPane();
+            opponentBoardSpace.add(opponentBoards[i], 0, m);
+            m++;
+        }
+        for (int i : otherPlayers) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+                    oButtons[i][j][k] = new Button();
+                    int x = i;
+                    int u = j;
+                    int v = k;
+                    oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
+                    opponentBoards[i].add(oButtons[i][j][k], j, k);
+                }
             }
         }
     }
@@ -100,11 +126,11 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    void handleOpnClick(int x, int y) {
+    void handleOpnClick(int board, int x, int y) {
         try {
-            if (this.turn && !gameover){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
+            if (this.turn && !gameOver){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
                 System.out.println("Shot by player on " + x + ":" + y);
-                playerToServer.put("Shot", id, x, y);
+                playerToServer.put("Shot", id, x, y, board);
                 this.turn = false;
             }
 
@@ -121,11 +147,11 @@ public class Controller implements Initializable {
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
                 serverToPlayer.query(new ActualField("Start"));
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        genOpnBoard(SIZE, SIZE);
-                    }
-                });
+                    Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            genOpnBoard(SIZE, numberOfPlayers);
+                        }
+                    });
                 return 1;
             }
         };
@@ -150,13 +176,13 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
-    public void listenForGameover(){
+    public void listenForGameOver(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
                 serverToPlayer.query(new ActualField("Gameover"));
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        setGameover();
+                        setGameOver();
                     }
                 });
                 return 1;
@@ -172,18 +198,18 @@ public class Controller implements Initializable {
             @Override protected Integer call() throws Exception {
                 while(true){
                     System.out.println("Waiting for response");
-                    Object[] res = serverToPlayer.get(new ActualField("Shot"), new FormalField(Integer.class), new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
-                    int id_ = (int) res[1];
-                    int x = (int) res[3];
-                    int y = (int) res[4];
+                    Object[] res = serverToPlayer.get(new ActualField("Shot"),  new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
+                    int x = (int) res[2];
+                    int y = (int) res[3];
+                    int boardShotAt = (int) res[4];
                     boolean hit = (boolean) res[5];
 
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
-                            if (id_ == id){
-                                setOpnHit(x, y, hit);
+                            if (boardShotAt == id){
+                                setOwnBoardHit(x, y, hit);
                             } else {
-                                setPlayerHit(x, y, hit);
+                                setOtherPlayerHit(boardShotAt, x, y, hit);
                             }
                         }
                     });
@@ -194,27 +220,25 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
-    public void setPlayerHit(int x, int y, boolean hit){
+    public void setOwnBoardHit(int x, int y, boolean hit){
         if (hit){
             pButtons[x][y].setStyle("-fx-background-color: #913133");
-
         } else {
             pButtons[x][y].setStyle("-fx-background-color: #7cbef4");
-
         }
-
     }
-    public void setOpnHit(int x, int y, boolean hit){
+    public void setOtherPlayerHit(int boardShotAt, int x, int y, boolean hit){
         if (hit){
-            oButtons[x][y].setStyle("-fx-background-color: #f2686a");
+            oButtons[boardShotAt][x][y].setStyle("-fx-background-color: #f2686a");
         } else {
-            oButtons[x][y].setStyle("-fx-background-color: #7cbef4");
+            oButtons[boardShotAt][x][y].setStyle("-fx-background-color: #7cbef4");
         }
     }
-    public void setGameover(){
-        gameover = true;
+    public void setGameOver(){
+        gameOver = true;
     }
     public void setTurn(){ this.turn = true; }
+
     public int setShip(int x, int y, int i) {
         if (rotated) {
             if(SIZE < x + i || board.shipInTheway(x, y, i, rotated)) {
@@ -246,35 +270,6 @@ public class Controller implements Initializable {
     public void showShip(int x, int y){
         pButtons[x][y].setStyle("-fx-background-color: #4f4f4f");
 
-    }
-
-    public int setShip(int x, int y, int i) {
-        if (rotated) {
-            if(SIZE <= x + i) {
-                System.out.printf("ship out of bound");
-                return i;
-            }
-            else {
-                for (int j = 0; j < i; j++) {
-                    board.placeShip(x + j, y);
-                    buttons[x + j][y].setStyle("-fx-background-color: blue");
-                }
-                return i + 1;
-            }
-        }
-        else {
-            if(SIZE <= y + i) {
-                System.out.printf("ship out of bound");
-                return i;
-            }
-            else {
-                for (int j = 0; j < i; j++) {
-                    board.placeShip(x, y + j);
-                    buttons[x][y+j].setStyle("-fx-background-color: blue");
-                }
-                return i + 1;
-            }
-        }
     }
 }
 

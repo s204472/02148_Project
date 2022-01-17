@@ -2,13 +2,23 @@ package common.src.main;
 
 import org.jspace.*;
 
+import java.util.*;
+
 public class App {
 	private static Space idSpace;
 	private static Space serverToPlayer;
 	private static Space playerToServer;
-
+	//number of players should be between 2 and 4.
+	private static int numberOfPlayers = 4;
+	private static int sizeOfMap = 10;
+	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
+	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
 
 	public static void main(String[] argv) throws InterruptedException {
+		for (int i=0; i < numberOfPlayers; i++) {
+		    alivePlayers.add(i);
+		}
+		Arrays.fill(playerXAlive, true);
 		String port = "9000";
 		String host = "localhost";
 		String uri = "tcp://" + host + ":" + port + "/?conn";
@@ -23,12 +33,13 @@ public class App {
 		repo.add("id", idSpace);
 
 		try {
-			idSpace.put(1);
-			idSpace.put(2);
+		    for (int i=0; i<numberOfPlayers; i++) {
+				idSpace.put(i, numberOfPlayers, sizeOfMap);
+			}
 		} catch (Exception e){}
 
 		// Serve id's
-		for (int i = 0; i < 2; i++){
+		for (int i = 0; i < numberOfPlayers; i++) {
 			try {
 				Object[] objects = playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
 				System.out.println(objects[0] + (objects[1].toString()) + " connected");
@@ -36,46 +47,44 @@ public class App {
 		}
 
 		System.out.println("Players connected");
-		serverToPlayer.put("Placeships");
+		serverToPlayer.put("Place ships");
 
-		GameBoard b1 = (GameBoard) playerToServer.get(new ActualField("Board"), new ActualField(1), new FormalField(GameBoard.class))[2];
-		GameBoard b2 = (GameBoard) playerToServer.get(new ActualField("Board"), new ActualField(2), new FormalField(GameBoard.class))[2];
+		GameBoard[] gameBoardArray = new GameBoard[numberOfPlayers];
+
+		for (int i=0; i< numberOfPlayers; i++) {
+			gameBoardArray[i] = (GameBoard) playerToServer.get(new ActualField("Board"), new ActualField(i), new FormalField(GameBoard.class))[2];
+		}
 
 		serverToPlayer.put("Start");
 
 		// Read shots
 		Object[] res;
-		int id, x, y;
-		boolean hit, gameover;
+		int id, x, y, shotAtBoard;
+		boolean hit, gameOver;
 		while(true){
 			try {
 				// Player 1
-				serverToPlayer.put("Turn", 1);
-				res = playerToServer.get(new ActualField("Shot"), new ActualField(1), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
-				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
-
-				hit = b2.setHit(x, y);
-				serverToPlayer.put("Shot", 1, 1, x, y, hit); // Shot by player 1, message for player 1, x, y, was a hit?
-				serverToPlayer.put("Shot", 1, 2, x, y, hit); // Shot by player 1, message for player 2, x, y, was a hit?
-				if( b2.isGameover()){
-					serverToPlayer.put("Gameover");
+				if (alivePlayers.size() == 1) {
+					serverToPlayer.put("GameOver");
+					break;
 				}
-
-
-				// Player 2
-				serverToPlayer.put("Turn", 2);
-				res = playerToServer.get(new ActualField("Shot"), new ActualField(2), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
-				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
-
-				hit = b1.setHit(x, y);
-				serverToPlayer.put("Shot", 2, 1, x, y, hit);
-				serverToPlayer.put("Shot", 2, 2, x, y, hit);
-				if(b1.isGameover()){
-					serverToPlayer.put("Gameover");
+                for (int i = 0; i < numberOfPlayers; i++) {
+                	if (playerXAlive[i]) {
+						serverToPlayer.put("Turn", i);
+						res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+						id = (int) res[1]; x = (int) res[2]; y = (int) res[3]; shotAtBoard = (int) res[4];
+						hit = gameBoardArray[shotAtBoard].setHit(x, y);
+						for (int j : alivePlayers) {
+							serverToPlayer.put("Shot", j, x, y, shotAtBoard, hit);
+						}
+						if(gameBoardArray[shotAtBoard].isGameover()) {
+							playerXAlive[shotAtBoard] = false;
+						    int tempIndexOfPlayer = alivePlayers.indexOf(shotAtBoard);
+						    alivePlayers.remove(tempIndexOfPlayer);
+							System.out.println("player: " + shotAtBoard + " is dead");
+						}
+					}
 				}
-
-
-
 			} catch (InterruptedException e) {}
 		}
 	}

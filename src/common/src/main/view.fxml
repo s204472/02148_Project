@@ -49,7 +49,7 @@
        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
      </rowConstraints>
      <children>
-       <GridPane fx:id="oGrid" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" />
+       <GridPane fx:id="opponentBoardSpace" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" />
        <GridPane fx:id="pGrid" prefHeight="116.0" prefWidth="0.0" />
      </children>
    </GridPane>
