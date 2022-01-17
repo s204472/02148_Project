@@ -7,6 +7,11 @@ public class App {
 	private static Space serverToPlayer;
 	private static Space playerToServer;
 
+	private static Space chat;
+
+	private static int numPlayers = 2;
+
+
 	public static void main(String[] argv) throws InterruptedException {
 		String port = "9000";
 		String host = "localhost";
@@ -21,9 +26,13 @@ public class App {
 		repo.add("playerToServer", playerToServer);
 		repo.add("id", idSpace);
 
+		// Chat init
+		chat = new SequentialSpace();
+		repo.add("chat", chat);
+
 		try {
-			idSpace.put(1);
-			idSpace.put(2);
+			idSpace.put(1, numPlayers);
+			idSpace.put(2, numPlayers);
 		} catch (Exception e){}
 
 		// Serve id's
