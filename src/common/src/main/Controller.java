@@ -46,6 +46,10 @@ public class Controller implements Initializable {
     public VBox msgArea;
     @FXML
     public TextField msgInput;
+    @FXML
+    public Button rotateBtn;
+    @FXML
+    public HBox widgetContainer;
 
     UiHelper ui = new UiHelper(SIZE);
 
@@ -208,6 +212,7 @@ public class Controller implements Initializable {
                 serverToPlayer.query(new ActualField("Start"));
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
+                            widgetContainer.getChildren().remove(rotateBtn);
                             lStatusbar.setText("Opponents turn");
                             genOpnBoard(SIZE, numberOfPlayers);
                             if (id == 0){
@@ -245,7 +250,7 @@ public class Controller implements Initializable {
     public void listenForGameOver(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
-                serverToPlayer.query(new ActualField("Gameover"));
+                serverToPlayer.query(new ActualField("Gameover"), new ActualField(id));
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
                         setGameOver();
@@ -274,9 +279,9 @@ public class Controller implements Initializable {
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
                             if (boardShotAt == id){
-                                setOwnBoardHit(x, y, hit);
+                                ui.setPlayerHit(pButtons, x, y, hit);
                             } else {
-                                setOtherPlayerHit(boardShotAt, x, y, hit);
+                                ui.setOpnHit(oButtons[boardShotAt], x, y, hit);
                             }
 
                         }
@@ -288,20 +293,7 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
-    public void setOwnBoardHit(int x, int y, boolean hit){
-        if (hit){
-            pButtons[x][y].setStyle("-fx-background-color: #913133");
-        } else {
-            pButtons[x][y].setStyle("-fx-background-color: #7cbef4");
-        }
-    }
-    public void setOtherPlayerHit(int boardShotAt, int x, int y, boolean hit){
-        if (hit){
-            oButtons[boardShotAt][x][y].setStyle("-fx-background-color: #f2686a");
-        } else {
-            oButtons[boardShotAt][x][y].setStyle("-fx-background-color: #7cbef4");
-        }
-    }
+
     public void setGameOver(){
         gameOver = true;
     }

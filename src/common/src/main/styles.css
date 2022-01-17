@@ -1,7 +1,10 @@
 * {
     -fx-font-family:Montserrat;
 }
-
+.statusbar {
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
 .fields {
 	-fx-background-color: #e0e0e0;
 	-fx-border-color: #b3b3b3;
