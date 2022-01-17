@@ -8,38 +8,23 @@ public class App {
 	private static Space idSpace;
 	private static Space serverToPlayer;
 	private static Space playerToServer;
-	//number of players should be between 2 and 4.
-	private static int numberOfPlayers = 4;
+	private static int numberOfPlayers = 2;
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
 	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
-
 	private static Space chat;
 
-	private static int numPlayers = 2;
 
 
 	public static void main(String[] argv) throws InterruptedException {
+		initTupleSpaces();
+
+
 		for (int i=0; i < numberOfPlayers; i++) {
 		    alivePlayers.add(i);
 		}
 		Arrays.fill(playerXAlive, true);
-		String port = "9000";
-		String host = "localhost";
-		String uri = "tcp://" + host + ":" + port + "/?conn";
-		SpaceRepository repo = new SpaceRepository();
-		repo.addGate(uri);
-		serverToPlayer = new SequentialSpace();
-		playerToServer = new SequentialSpace();
-		idSpace = new SequentialSpace();
 
-		repo.add("serverToPlayer", serverToPlayer);
-		repo.add("playerToServer", playerToServer);
-		repo.add("id", idSpace);
-
-		// Chat init
-		chat = new SequentialSpace();
-		repo.add("chat", chat);
 
 		try {
 		    for (int i=0; i<numberOfPlayers; i++) {
@@ -104,6 +89,24 @@ public class App {
 				}
 			} catch (InterruptedException e) {}
 		}
+	}
+	public static void initTupleSpaces(){
+		String port = "9000";
+		String host = "localhost";
+		String uri = "tcp://" + host + ":" + port + "/?conn";
+		SpaceRepository repo = new SpaceRepository();
+		repo.addGate(uri);
+		serverToPlayer = new SequentialSpace();
+		playerToServer = new SequentialSpace();
+		idSpace = new SequentialSpace();
+
+		repo.add("serverToPlayer", serverToPlayer);
+		repo.add("playerToServer", playerToServer);
+		repo.add("id", idSpace);
+
+		// Chat init
+		chat = new SequentialSpace();
+		repo.add("chat", chat);
 	}
 }
 

@@ -122,7 +122,8 @@ public class Controller implements Initializable {
         int m = 0;
         for (int i : otherPlayers)  {
             opponentBoards[i] = new GridPane();
-            opponentBoardSpace.add(opponentBoards[i], 0, m);
+            opponentBoards[i].getStyleClass().add("opnBoard");
+            opponentBoardSpace.add(opponentBoards[i], m % 2, m / 2);
             m++;
         }
         for (int i : otherPlayers) {
@@ -137,10 +138,11 @@ public class Controller implements Initializable {
                     int v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
+                    //ui.setInactive(oButtons);
                 }
             }
         }
-        //ui.setInactive(oButtons);
+
     }
 
     @FXML

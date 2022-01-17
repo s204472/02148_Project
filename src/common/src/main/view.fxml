@@ -44,48 +44,54 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="main" prefHeight="506.0" prefWidth="960.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.Controller">
+<VBox fx:id="main" prefHeight="720.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.Controller">
   <children>
-      <GridPane>
+      <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0">
          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="814.0" minWidth="10.0" prefWidth="486.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="824.0" minWidth="10.0" prefWidth="794.0" />
          </columnConstraints>
          <rowConstraints>
-            <RowConstraints />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="403.0" minHeight="43.0" prefHeight="43.0" />
+            <RowConstraints maxHeight="448.0" minHeight="0.0" prefHeight="448.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="152.0" minHeight="0.0" prefHeight="72.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="260.0" minHeight="0.0" prefHeight="157.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label fx:id="lPlayer" styleClass="header" text="" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-            <Label styleClass="header" text="Opponent" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-         </children>
-         <VBox.margin>
-            <Insets bottom="15.0" top="10.0" />
-         </VBox.margin>
-      </GridPane>
-      <HBox>
-         <children>
-         <GridPane hgap="20.0" prefHeight="373.0" prefWidth="646.0">
-           <columnConstraints>
-             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-           </columnConstraints>
-           <rowConstraints>
-             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-           </rowConstraints>
-           <children>
-             <GridPane fx:id="opponentBoardSpace" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
-             <GridPane fx:id="pGrid" prefHeight="116.0" prefWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" />
-           </children>
-               <HBox.margin>
-                  <Insets left="20.0" right="20.0" />
-               </HBox.margin>
-         </GridPane>
-            <VBox maxWidth="-Infinity" prefWidth="280.0" stylesheets="@styles.css">
+            <GridPane GridPane.columnSpan="2">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="720.0" minWidth="10.0" prefWidth="487.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="800.0" minWidth="10.0" prefWidth="793.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label fx:id="lPlayer" styleClass="header" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <Label styleClass="header" text="Opponent" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+               </children>
+            </GridPane>
+       <GridPane fx:id="pGrid" prefHeight="116.0" prefWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+       <GridPane fx:id="opponentBoardSpace" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+            <HBox alignment="CENTER_LEFT" GridPane.rowIndex="2">
+               <children>
+                <Button id="Rotate" mnemonicParsing="false" onAction="#rotate" prefHeight="48.0" prefWidth="150.0" styleClass="settings" text="Rotate" />
+                  <Label fx:id="lStatusbar" wrapText="true">
+                     <font>
+                        <Font size="22.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+               </children>
+            </HBox>
+            <VBox maxWidth="1.7976931348623157E308" stylesheets="@styles.css" GridPane.rowIndex="3">
                <children>
                   <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="200.0" prefHeight="200.0" prefViewportHeight="200.0" prefViewportWidth="200.0">
                      <content>
-                        <VBox fx:id="msgArea" maxWidth="-Infinity" prefWidth="280.0" styleClass="msgArea" stylesheets="@styles.css" />
+                        <VBox fx:id="msgArea" maxWidth="1.7976931348623157E308" styleClass="msgArea" stylesheets="@styles.css" />
                      </content>
                   </ScrollPane>
                   <HBox>
@@ -103,41 +109,11 @@
                      </children>
                   </HBox>
                </children>
-               <HBox.margin>
-                  <Insets right="20.0" />
-               </HBox.margin>
             </VBox>
          </children>
-         <VBox.margin>
-            <Insets />
-         </VBox.margin>
-      </HBox>
-      <GridPane>
-         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="475.0" minWidth="10.0" prefWidth="108.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="852.0" minWidth="10.0" prefWidth="852.0" />
-         </columnConstraints>
-         <rowConstraints>
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-         </rowConstraints>
-         <children>
-          <Button id="Rotate" mnemonicParsing="false" onAction="#rotate" prefHeight="48.0" prefWidth="117.0" styleClass="settings" text="Rotate">
-               <GridPane.margin>
-                  <Insets />
-               </GridPane.margin>
-            </Button>
-            <Label fx:id="lStatusbar" prefHeight="23.0" prefWidth="854.0" wrapText="true" GridPane.columnIndex="1">
-               <font>
-                  <Font size="22.0" />
-               </font>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-            </Label>
-         </children>
-         <VBox.margin>
-            <Insets bottom="10.0" top="25.0" />
-         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
       </GridPane>
   </children>
 </VBox>
