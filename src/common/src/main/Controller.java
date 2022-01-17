@@ -7,6 +7,7 @@ import java.awt.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -36,32 +37,42 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 public class Controller implements Initializable {
-    public static final int SIZE = 10;
+    public static int SIZE;
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
-    public static GameBoard board = new GameBoard(SIZE);
+    public static GameBoard board;
     public static int shipNumber = 2;
+
 
     @FXML
     private Scene gameScene;
+
     @FXML
     public GridPane pGrid;
     @FXML
-    public GridPane opponentGrid;
+    public GridPane[] opponentBoards;
+    @FXML
+    public GridPane opponentBoardSpace;
     @FXML
     public Label lPlayer;
+    @FXML
+    public Label lStatusbar;
     @FXML
     public VBox msgArea;
     @FXML
     public TextField msgInput;
+    @FXML
+    public Button rotateBtn;
+    @FXML
+    public HBox widgetContainer;
 
     UiHelper ui = new UiHelper(SIZE);
 
     private Button[][] pButtons;
-    private Button[][] oButtons;
+    private Button[][][] oButtons;
 
     private static int id;
-    private static int numPlayers;
+    private static int numberOfPlayers;
     private static RemoteSpace idSpace;
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
@@ -70,6 +81,8 @@ public class Controller implements Initializable {
     private boolean gameover = false;
     private static String selectedPlayers;
 
+    private boolean gameOver = false;
+    private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
 
 
@@ -84,23 +97,23 @@ public class Controller implements Initializable {
             chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
-                Object[] res = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class));
-                id = (int) res[0]; numPlayers = (int) res[1];
+                Object[] idAndPlayersAndSize = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+                id = (int) idAndPlayersAndSize[0];
+                numberOfPlayers = (int) idAndPlayersAndSize[1];
+                SIZE = (int)idAndPlayersAndSize[2];
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
-
-                serverToPlayer.query(new ActualField("Placeships"));
+                board = new GameBoard(SIZE);
+                opponentBoards = new GridPane[numberOfPlayers];
+                serverToPlayer.query(new ActualField("Place ships"));
                 genPlayerBoard(SIZE, SIZE);
-
-
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
         waitForOpnBoard();
         listenForTurn();
         listenForShots();
-        listenForGameover();
+        listenForGameOver();
         chatListener();
-
     }
 
     public static void setGame(GameBoard gameBoard) {board = gameBoard;}
@@ -140,31 +153,49 @@ public class Controller implements Initializable {
         }
     }
 
-
-
-    public void genOpnBoard(int x, int y){
-        oButtons = new Button[x][y];
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                oButtons[i][j] = new Button();
-                oButtons[i][j].getStyleClass().add("fields");
-                oButtons[i][j].getStyleClass().add("opn");
-
-                int u = i;
-                int v = j;
-                oButtons[i][j].setOnAction(event -> handleOpnClick(u, v));
-                opponentGrid.add(oButtons[i][j], i, j);
+    public void genOpnBoard(int size, int numberOfPlayers){
+        oButtons = new Button[numberOfPlayers][size][size];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            if (i == id) {
+                continue;
+            } else {
+                otherPlayers.add(i);
             }
         }
-        ui.setInactive(oButtons);
+        int m = 0;
+        for (int i : otherPlayers)  {
+            opponentBoards[i] = new GridPane();
+            opponentBoards[i].getStyleClass().add("opnBoard");
+            opponentBoardSpace.add(opponentBoards[i], m % 2, m / 2);
+            m++;
+        }
+        for (int i : otherPlayers) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+
+                    oButtons[i][j][k] = new Button();
+                    oButtons[i][j][k].getStyleClass().add("fields");
+                    oButtons[i][j][k].getStyleClass().add("opn");
+                    int x = i;
+                    int u = j;
+                    int v = k;
+                    oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
+                    opponentBoards[i].add(oButtons[i][j][k], j, k);
+                    //ui.setInactive(oButtons);
+                }
+            }
+        }
+
     }
 
     @FXML
     void handlePlayerClick(int x, int y) {
         try {
             if(!shipsPlaced) {
+                lStatusbar.setText("Place ships");
                 shipNumber = setShip(x, y, shipNumber);
                 if (shipNumber == 6) {
+                    lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
                 }
@@ -173,13 +204,14 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    void handleOpnClick(int x, int y) {
+    void handleOpnClick(int board, int x, int y) {
         try {
-            if (this.turn && !gameover){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
+            if (this.turn && !gameOver){
                 System.out.println("Shot by player on " + x + ":" + y);
-                playerToServer.put("Shot", id, x, y);
+                playerToServer.put("Shot", id, x, y, board);
                 this.turn = false;
-                ui.setInactive(oButtons);
+                lStatusbar.setText("Opponents turn");
+                //ui.setInactive(oButtons);
             }
         } catch (InterruptedException e) {}
     }
@@ -190,17 +222,16 @@ public class Controller implements Initializable {
             String msg = msgInput.getText();
             if (!msg.equals("")){
                 msgInput.clear();
-                for (int i = 1; i <= numPlayers; i++){
+                HBox msgContainer = new HBox();
+                Text sender = new Text("You: ");
+                sender.getStyleClass().add("msgYou");
+                Text txt = new Text(msg + "\n");
+                msgContainer.getChildren().add(sender);
+                msgContainer.getChildren().add(txt);
+                msgContainer.setPrefHeight(10);
+                msgArea.getChildren().add(msgContainer);
+                for (int i = 0; i < numberOfPlayers; i++){
                     if (i != id){
-                        HBox msgContainer = new HBox();
-
-                        Text sender = new Text("You: ");
-                        sender.getStyleClass().add("msgYou");
-                        Text txt = new Text(msg + "\n");
-                        msgContainer.getChildren().add(sender);
-                        msgContainer.getChildren().add(txt);
-                        msgContainer.setPrefHeight(10);
-                        msgArea.getChildren().add(msgContainer);
                         chat.put(id, i, msg);
                     }
                 }
@@ -214,20 +245,20 @@ public class Controller implements Initializable {
         rotated = !rotated;
     }
 
-
     public void waitForOpnBoard(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
                 serverToPlayer.query(new ActualField("Start"));
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-
-                        genOpnBoard(SIZE, SIZE);
-                        if (id == 1){
-                            ui.setActive(oButtons);
+                    Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            widgetContainer.getChildren().remove(rotateBtn);
+                            lStatusbar.setText("Opponents turn");
+                            genOpnBoard(SIZE, numberOfPlayers);
+                            if (id == 0){
+                                //ui.setActive(oButtons);
+                            }
                         }
-                    }
-                });
+                    });
                 return 1;
             }
         };
@@ -243,8 +274,9 @@ public class Controller implements Initializable {
                     serverToPlayer.get(new ActualField("Turn"), new ActualField(id));
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
+                            lStatusbar.setText("Your turn");
                             setTurn();
-                            ui.setActive(oButtons);
+                            //ui.setActive(oButtons);
                         }
                     });
                 }
@@ -254,14 +286,14 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
-
-    public void listenForGameover(){
+    public void listenForGameOver(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
-                serverToPlayer.query(new ActualField("Gameover"));
+                serverToPlayer.query(new ActualField("Gameover"), new ActualField(id));
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-                        setGameover();
+                        setGameOver();
+                        lStatusbar.setText("Gameover");
                     }
                 });
                 return 1;
@@ -277,18 +309,18 @@ public class Controller implements Initializable {
             @Override protected Integer call() throws Exception {
                 while(true){
                     System.out.println("Waiting for response");
-                    Object[] res = serverToPlayer.get(new ActualField("Shot"), new FormalField(Integer.class), new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
-                    int id_ = (int) res[1];
-                    int x = (int) res[3];
-                    int y = (int) res[4];
+                    Object[] res = serverToPlayer.get(new ActualField("Shot"),  new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
+                    int x = (int) res[2];
+                    int y = (int) res[3];
+                    int boardShotAt = (int) res[4];
                     boolean hit = (boolean) res[5];
 
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
-                            if (id_ == id){
-                                ui.setOpnHit(oButtons, x, y, hit);
-                            } else {
+                            if (boardShotAt == id){
                                 ui.setPlayerHit(pButtons, x, y, hit);
+                            } else {
+                                ui.setOpnHit(oButtons[boardShotAt], x, y, hit);
                             }
 
                         }
@@ -300,6 +332,11 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
+
+    public void setGameOver(){
+        gameOver = true;
+    }
+    public void setTurn(){ this.turn = true; }
 
     public void chatListener(){
         Task<Integer> task = new Task<Integer>() {
@@ -328,10 +365,6 @@ public class Controller implements Initializable {
         th.start();
     }
 
-
-    public void setGameover(){ gameover = true; }
-
-    public void setTurn(){ this.turn = true; }
 
     public int setShip(int x, int y, int i) {
         if(SIZE < x + (rotated ? i : 0) || SIZE < y + (rotated ? 0 : i) || board.shipInTheway(x, y, i, rotated)) {

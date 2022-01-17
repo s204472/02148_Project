@@ -7,7 +7,5 @@ module jSpace.Project {
     requires javafx.web;
     requires javafx.swing;
     requires java.sql;
-
-
     opens common.src.main;
 }
