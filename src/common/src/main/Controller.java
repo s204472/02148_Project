@@ -1,5 +1,6 @@
 package common.src.main;
 
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -7,14 +8,18 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.scene.layout.GridPane;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import javafx.concurrent.Task;
 
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -26,7 +31,8 @@ public class Controller implements Initializable {
     public static GameBoard board = new GameBoard(SIZE);
     public static int shipNumber = 2;
 
-
+    @FXML
+    private Scene gameScene;
     @FXML
     public GridPane pGrid;
     @FXML
@@ -46,6 +52,10 @@ public class Controller implements Initializable {
     private static RemoteSpace playerToServer;
     private boolean turn = false;
     private boolean gameover = false;
+    private static String selectedPlayers;
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
@@ -73,6 +83,20 @@ public class Controller implements Initializable {
         listenForGameover();
     }
 
+    public static void setGame(GameBoard gameBoard) {board = gameBoard;}
+    public static void selectPlayers(String players) {selectedPlayers = players;}
+    private void newGame() {
+        Scene tableViewScene = null;
+        try {
+            tableViewScene = (Scene) FXMLLoader.load(PlayerMain.class.getResource("/common.src/main/view.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Stage stage = (Stage)this.gameScene.getWindow();
+        stage.setScene(tableViewScene);
+        stage.setX(stage.getX());
+        stage.show();
+    }
 
     public void genPlayerBoard(int x, int y){
         pButtons = new Button[x][y];
@@ -246,7 +270,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public void showShipHover(int x, int y){
+    public void showShipHover(int x, int y) throws IOException {
         int l = shipNumber;
         if (!shipsPlaced){
             if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
@@ -255,7 +279,11 @@ public class Controller implements Initializable {
                 }
             }
         }
+    public void showShip(int x, int y){
+        pButtons[x][y].setStyle("-fx-background-color: #4f4f4f");
     }
-}
+
+
+}}
 
 

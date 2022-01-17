@@ -1,0 +1,30 @@
+.fields {
+	-fx-background-color: #e0e0e0;
+	-fx-border-color: #b3b3b3;
+	-fx-padding: 10px;
+	-fx-background-radius: 0;
+	-fx-pref-width: 40px;
+	-fx-pref-height: 40px;
+}
+.opn:hover {
+    -fx-background-color: #c4c4c4;
+}
+.inactive:hover {
+    -fx-background-color: #e0e0e0;
+}
+.hover {
+    -fx-background-color: #c4c4c4;
+}
+.settings {
+    -fx-font-weight: bold;
+	-fx-font-family: Montserrat;
+	-fx-font-size: 14;
+	-fx-padding: 10px;
+	-fx-pref-width: 100px;
+    -fx-pref-height: 40px;
+}
+.header {
+    -fx-font-weight: bold;
+	-fx-font-family:Montserrat;
+	-fx-font-size: 18;
+}
