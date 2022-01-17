@@ -53,34 +53,52 @@ public class App {
 
 		// Read shots
 		Object[] res;
-		int id, x, y;
+		int id, x = 0, y = 0;
 		boolean hit, gameover;
 		while(true){
 			try {
+				boolean samePlace1 = true; boolean samePlace2 = true; boolean shootAgain = true;
 				// Player 1
-				serverToPlayer.put("Turn", 1);
-				res = playerToServer.get(new ActualField("Shot"), new ActualField(1), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
-				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
-
-				hit = b2.setHit(x, y);
-				serverToPlayer.put("Shot", 1, 1, x, y, hit); // Shot by player 1, message for player 1, x, y, was a hit?
-				serverToPlayer.put("Shot", 1, 2, x, y, hit); // Shot by player 1, message for player 2, x, y, was a hit?
-				if( b2.isGameover()){
-					serverToPlayer.put("Gameover");
+				while (shootAgain){
+					while(samePlace1){
+						serverToPlayer.put("Turn", 1);
+						res = playerToServer.get(new ActualField("Shot"), new ActualField(1), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
+						id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
+						samePlace1 = b2.getHit(x, y);
+					}
+					samePlace1 = true;
+					hit = b2.setHit(x, y);
+					shootAgain = hit;
+					serverToPlayer.put("Shot", 1, 1, x, y, hit); // Shot by player 1, message for player 1, x, y, was a hit?
+					serverToPlayer.put("Shot", 1, 2, x, y, hit); // Shot by player 1, message for player 2, x, y, was a hit?
+					if( b2.isGameover()) {
+						serverToPlayer.put("Gameover");
+					}
 				}
+				shootAgain = true;
+
+
 
 
 				// Player 2
-				serverToPlayer.put("Turn", 2);
-				res = playerToServer.get(new ActualField("Shot"), new ActualField(2), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
-				id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
-
-				hit = b1.setHit(x, y);
-				serverToPlayer.put("Shot", 2, 1, x, y, hit);
-				serverToPlayer.put("Shot", 2, 2, x, y, hit);
-				if(b1.isGameover()){
-					serverToPlayer.put("Gameover");
+				while(shootAgain){
+					while(samePlace2){
+						serverToPlayer.put("Turn", 2);
+						res = playerToServer.get(new ActualField("Shot"), new ActualField(2), new FormalField(Integer.class), new FormalField(Integer.class)); // Shot from player i
+						id = (int) res[1]; x = (int) res[2]; y = (int) res[3];
+						samePlace2 = b1.getHit(x, y);
+					}
+					samePlace2 = true;
+					hit = b1.setHit(x, y);
+					shootAgain = hit;
+					serverToPlayer.put("Shot", 2, 1, x, y, hit);
+					serverToPlayer.put("Shot", 2, 2, x, y, hit);
+					if(b1.isGameover()){
+						serverToPlayer.put("Gameover");
+					}
 				}
+
+
 			} catch (InterruptedException e) {}
 		}
 	}
