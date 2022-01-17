@@ -9,6 +9,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,7 +35,8 @@ public class Controller implements Initializable {
     public GridPane oGrid;
     @FXML
     public Label lPlayer;
-
+    @FXML
+    public Label lStatusbar;
 
     UiHelper ui = new UiHelper(SIZE);
 
@@ -113,8 +116,10 @@ public class Controller implements Initializable {
     void handlePlayerClick(int x, int y) {
         try {
             if(!shipsPlaced) {
+                lStatusbar.setText("Place ships");
                 shipNumber = setShip(x, y, shipNumber);
                 if (shipNumber == 6) {
+                    lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
                 }
@@ -125,10 +130,11 @@ public class Controller implements Initializable {
     @FXML
     void handleOpnClick(int x, int y) {
         try {
-            if (this.turn && !gameover){ // TODO: DON'T SHOOT AT SAME FIELD MORE THAN ONCE
+            if (this.turn && !gameover){
                 System.out.println("Shot by player on " + x + ":" + y);
                 playerToServer.put("Shot", id, x, y);
                 this.turn = false;
+                lStatusbar.setText("Opponents turn");
                 ui.setInactive(oButtons);
             }
         } catch (InterruptedException e) {}
@@ -139,14 +145,13 @@ public class Controller implements Initializable {
         rotated = !rotated;
     }
 
-
     public void waitForOpnBoard(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
                 serverToPlayer.query(new ActualField("Start"));
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
-
+                        lStatusbar.setText("Opponents turn");
                         genOpnBoard(SIZE, SIZE);
                         if (id == 1){
                             ui.setActive(oButtons);
@@ -168,6 +173,7 @@ public class Controller implements Initializable {
                     serverToPlayer.get(new ActualField("Turn"), new ActualField(id));
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
+                            lStatusbar.setText("Your turn");
                             setTurn();
                             ui.setActive(oButtons);
                         }
@@ -187,6 +193,7 @@ public class Controller implements Initializable {
                 Platform.runLater(new Runnable() {
                     @Override public void run() {
                         setGameover();
+                        lStatusbar.setText("Gameover");
                     }
                 });
                 return 1;
@@ -201,7 +208,6 @@ public class Controller implements Initializable {
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
                 while(true){
-                    System.out.println("Waiting for response");
                     Object[] res = serverToPlayer.get(new ActualField("Shot"), new FormalField(Integer.class), new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
                     int id_ = (int) res[1];
                     int x = (int) res[3];
