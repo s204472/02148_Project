@@ -14,6 +14,11 @@ public class App {
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
 	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
 
+	private static Space chat;
+
+	private static int numPlayers = 2;
+
+
 	public static void main(String[] argv) throws InterruptedException {
 		for (int i=0; i < numberOfPlayers; i++) {
 		    alivePlayers.add(i);
@@ -31,6 +36,10 @@ public class App {
 		repo.add("serverToPlayer", serverToPlayer);
 		repo.add("playerToServer", playerToServer);
 		repo.add("id", idSpace);
+
+		// Chat init
+		chat = new SequentialSpace();
+		repo.add("chat", chat);
 
 		try {
 		    for (int i=0; i<numberOfPlayers; i++) {
@@ -59,30 +68,38 @@ public class App {
 
 		// Read shots
 		Object[] res;
-		int id, x, y, shotAtBoard;
-		boolean hit, gameOver;
+		int x, y, shotAtBoard;
+		boolean hit, shootAgain, samePlace;
 		while(true){
 			try {
-				// Player 1
 				if (alivePlayers.size() == 1) {
 					serverToPlayer.put("GameOver");
 					break;
 				}
                 for (int i = 0; i < numberOfPlayers; i++) {
                 	if (playerXAlive[i]) {
-						serverToPlayer.put("Turn", i);
-						res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
-						id = (int) res[1]; x = (int) res[2]; y = (int) res[3]; shotAtBoard = (int) res[4];
-						hit = gameBoardArray[shotAtBoard].setHit(x, y);
-						for (int j : alivePlayers) {
-							serverToPlayer.put("Shot", j, x, y, shotAtBoard, hit);
-						}
-						if(gameBoardArray[shotAtBoard].isGameover()) {
-							playerXAlive[shotAtBoard] = false;
-						    int tempIndexOfPlayer = alivePlayers.indexOf(shotAtBoard);
-						    alivePlayers.remove(tempIndexOfPlayer);
-							System.out.println("player: " + shotAtBoard + " is dead");
-						}
+						do {
+							do {
+								serverToPlayer.put("Turn", i);
+								res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+								x = (int) res[2]; y = (int) res[3]; shotAtBoard = (int) res[4];
+								samePlace = gameBoardArray[shotAtBoard].getHit(x, y);
+							} while (samePlace);
+							hit = gameBoardArray[shotAtBoard].setHit(x, y);
+							shootAgain = hit;
+							for (int j : alivePlayers) {
+								serverToPlayer.put("Shot", j, x, y, shotAtBoard, hit);
+							}
+							if(gameBoardArray[shotAtBoard].isGameover()) {
+								playerXAlive[shotAtBoard] = false;
+								int tempIndexOfPlayer = alivePlayers.indexOf(shotAtBoard);
+								alivePlayers.remove(tempIndexOfPlayer);
+								System.out.println("player: " + shotAtBoard + " is dead");
+								if (alivePlayers.size() == 1) {
+									break;
+								}
+							}
+						} while (shootAgain);
 					}
 				}
 			} catch (InterruptedException e) {}

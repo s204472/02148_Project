@@ -31,6 +31,10 @@ public class GameBoard {
         return board[x][y].setHit();
     }
 
+    public boolean getHit(int x, int y){
+        return board[x][y].getHit();
+    }
+
     public boolean shipInTheway(int x, int y, int shipLength, boolean rotated) {
         boolean inTheWay = false;
         for(int i = 0; i < shipLength; i++){
