@@ -9,7 +9,7 @@ public class App {
 	private static Space serverToPlayer;
 	private static Space playerToServer;
 	//number of players should be between 2 and 4.
-	private static int numberOfPlayers = 4;
+	private static int numberOfPlayers = 2;
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
 	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
