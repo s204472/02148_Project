@@ -1,15 +1,14 @@
 package common.src.main;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Button;
@@ -17,6 +16,10 @@ import javafx.scene.control.Label;
 
 import javafx.concurrent.Task;
 
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -32,11 +35,14 @@ public class Controller implements Initializable {
     @FXML
     public GridPane pGrid;
     @FXML
-    public GridPane oGrid;
+    public GridPane opponentGrid;
     @FXML
     public Label lPlayer;
     @FXML
     public Label lStatusbar;
+    public VBox msgArea;
+    @FXML
+    public TextField msgInput;
 
     UiHelper ui = new UiHelper(SIZE);
 
@@ -44,9 +50,11 @@ public class Controller implements Initializable {
     private Button[][] oButtons;
 
     private static int id;
+    private static int numPlayers;
     private static RemoteSpace idSpace;
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
+    private static RemoteSpace chat;
     private boolean turn = false;
     private boolean gameover = false;
 
@@ -58,9 +66,11 @@ public class Controller implements Initializable {
             idSpace        = new RemoteSpace("tcp://" + host + ":" + port + "/id?conn");
             serverToPlayer = new RemoteSpace("tcp://" + host + ":" + port + "/serverToPlayer?conn");
             playerToServer = new RemoteSpace("tcp://" + host + ":" + port + "/playerToServer?conn");
+            chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
-                id = (int) idSpace.get(new FormalField(Integer.class))[0];
+                Object[] res = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class));
+                id = (int) res[0]; numPlayers = (int) res[1];
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
 
@@ -74,6 +84,8 @@ public class Controller implements Initializable {
         listenForTurn();
         listenForShots();
         listenForGameover();
+        chatListener();
+
     }
 
 
@@ -106,7 +118,7 @@ public class Controller implements Initializable {
                 int u = i;
                 int v = j;
                 oButtons[i][j].setOnAction(event -> handleOpnClick(u, v));
-                oGrid.add(oButtons[i][j], i, j);
+                opponentGrid.add(oButtons[i][j], i, j);
             }
         }
         ui.setInactive(oButtons);
@@ -137,6 +149,31 @@ public class Controller implements Initializable {
                 lStatusbar.setText("Opponents turn");
                 ui.setInactive(oButtons);
             }
+        } catch (InterruptedException e) {}
+    }
+
+    @FXML
+    void handleSendClick() {
+        try {
+            String msg = msgInput.getText();
+            if (!msg.equals("")){
+                msgInput.clear();
+                for (int i = 1; i <= numPlayers; i++){
+                    if (i != id){
+                        HBox msgContainer = new HBox();
+
+                        Text sender = new Text("You: ");
+                        sender.getStyleClass().add("msgYou");
+                        Text txt = new Text(msg + "\n");
+                        msgContainer.getChildren().add(sender);
+                        msgContainer.getChildren().add(txt);
+                        msgContainer.setPrefHeight(10);
+                        msgArea.getChildren().add(msgContainer);
+                        chat.put(id, i, msg);
+                    }
+                }
+            }
+
         } catch (InterruptedException e) {}
     }
 
@@ -232,7 +269,32 @@ public class Controller implements Initializable {
         th.start();
     }
 
-
+    public void chatListener(){
+        Task<Integer> task = new Task<Integer>() {
+            @Override protected Integer call() throws Exception {
+                while(true){
+                    Object[] res = chat.get(new FormalField(Integer.class), new ActualField(id), new FormalField(String.class));
+                    int from = (int) res[0];
+                    String msg = res[2].toString();
+                    Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            HBox msgContainer = new HBox();
+                            msgContainer.getStyleClass().add("msgBox");
+                            Text sender = new Text("Player " + from + ": ");
+                            sender.getStyleClass().add("msgOpn");
+                            Text txt = new Text(msg + "\n");
+                            msgContainer.getChildren().add(sender);
+                            msgContainer.getChildren().add(txt);
+                            msgArea.getChildren().add(msgContainer);
+                        }
+                    });
+                }
+            }
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
+    }
 
 
     public void setGameover(){ gameover = true; }
