@@ -13,8 +13,8 @@
 	-fx-pref-height: 32px;
 }
 .opn {
-    -fx-pref-width: 28px;
-	-fx-pref-height: 28px;
+    -fx-pref-width: 24px;
+	-fx-pref-height: 24px;
 }
 
 .opnBoard {
@@ -45,6 +45,7 @@
     -fx-font-weight: bold;
 	-fx-font-size: 18;
 }
+
 .msgAreaContainer {
     -fx-background-color: #ffffff;
     -fx-border-radius: 0;
@@ -53,21 +54,24 @@
 .msgArea {
     -fx-padding: 10;
     -fx-background-color: #ffffff;
-
 }
+
 .msgInput {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
+
 .msgButton {
 	-fx-font-size: 12;
 	-fx-border-radius: 0;
 	-fx-background-radius: 0;
 }
+
 .msgOpn {
     -fx-fill: Red;
     -fx-font-weight: bold;
 }
+
 .msgYou {
     -fx-fill: Blue;
     -fx-font-weight: bold;

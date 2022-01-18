@@ -49,6 +49,7 @@ public class UiHelper {
             }
         }
     }
+
     public void setInactive(Button[][] b){
         for (int i = 0; i < b.length; i++){
             if (b[i] == null){
@@ -62,6 +63,7 @@ public class UiHelper {
             }
         }
     }
+
     public void setActive(Button[][] b){
         for (int i = 0; i < b.length; i++){
             if (b[i] == null){
@@ -75,6 +77,7 @@ public class UiHelper {
             }
         }
     }
+
     public void setActive(Button[][][] b){
         for (int k = 0; k < b.length; k++){
             if (b[k] == null){

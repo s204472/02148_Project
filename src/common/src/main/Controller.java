@@ -1,6 +1,5 @@
 package common.src.main;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -66,7 +64,6 @@ public class Controller implements Initializable {
     private boolean gameOver = false;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
-
     @Override
     public void initialize(URL url, ResourceBundle resources) {
         String port = "9000"; String host = "localhost";
@@ -97,7 +94,6 @@ public class Controller implements Initializable {
         listenForWin();
         chatListener();
     }
-
 
     public void genPlayerBoard(int x, int y){
         pButtons = new Button[x][y];
@@ -134,7 +130,6 @@ public class Controller implements Initializable {
         for (int i : otherPlayers) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
-
                     oButtons[i][j][k] = new Button();
                     oButtons[i][j][k].getStyleClass().add("fields");
                     oButtons[i][j][k].getStyleClass().add("opn");
@@ -143,7 +138,6 @@ public class Controller implements Initializable {
                     int v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
-
                 }
             }
         }
