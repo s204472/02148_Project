@@ -1,6 +1,5 @@
 package common.src.main;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -30,7 +28,7 @@ public class Controller implements Initializable {
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int shipNumber = 2;
+    public static int lengthOfCurrentShip = 2;
 
     @FXML
     public GridPane pGrid;
@@ -64,14 +62,12 @@ public class Controller implements Initializable {
     private static RemoteSpace chat;
     private boolean turn = false;
     private boolean gameOver = false;
-    private int[] shipConfiguration;
     private int numberOfShips;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
-
     @Override
     public void initialize(URL url, ResourceBundle resources) {
-        String port = "9000"; String host = "localhost";
+        String port = "9001"; String host = "localhost";
 
         try {
             idSpace        = new RemoteSpace("tcp://" + host + ":" + port + "/id?conn");
@@ -80,12 +76,11 @@ public class Controller implements Initializable {
             chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
-                Object[] objects = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer[].class));
+                Object[] objects = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
                 id = (int) objects[0];
                 numberOfPlayers = (int) objects[1];
                 SIZE = (int)objects[2];
-                shipConfiguration = (int[]) objects[3];
-                numberOfShips = 
+                numberOfShips = (int) objects[3];
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
                 board = new GameBoard(SIZE);
@@ -101,7 +96,6 @@ public class Controller implements Initializable {
         listenForWin();
         chatListener();
     }
-
 
     public void genPlayerBoard(int x, int y){
         pButtons = new Button[x][y];
@@ -138,7 +132,6 @@ public class Controller implements Initializable {
         for (int i : otherPlayers) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
-
                     oButtons[i][j][k] = new Button();
                     oButtons[i][j][k].getStyleClass().add("fields");
                     oButtons[i][j][k].getStyleClass().add("opn");
@@ -147,7 +140,6 @@ public class Controller implements Initializable {
                     int v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
-
                 }
             }
         }
@@ -158,8 +150,8 @@ public class Controller implements Initializable {
         try {
             if(!shipsPlaced) {
                 lStatusbar.setText("Place ships");
-                shipNumber = setShip(x, y, shipNumber);
-                if (shipNumber == 6) {
+                lengthOfCurrentShip = setShip(x, y, lengthOfCurrentShip);
+                if (lengthOfCurrentShip == (numberOfShips+2)) {
                     lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
@@ -369,14 +361,13 @@ public class Controller implements Initializable {
             for (int j = 0; j < i; j++) {
                 board.placeShip(x + (rotated ? j : 0), y + (rotated ? 0 : j));
                 ui.showShip(pButtons, x + (rotated ? j : 0), y + (rotated ? 0 : j));
-
             }
             return i + 1;
         }
     }
 
     public void showShipHover(int x, int y){
-        int l = shipNumber;
+        int l = lengthOfCurrentShip;
         if (!shipsPlaced){
             if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
