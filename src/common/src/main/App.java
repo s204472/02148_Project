@@ -11,19 +11,18 @@ public class App {
 	private static int numberOfPlayers = 4;
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
-	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
+	private static boolean[] playerXAlive = new boolean[numberOfPlayers];;
 	private static Space chat;
 
 
 	public static void main(String[] argv) throws InterruptedException {
 		initTupleSpaces();
-		initPlayers();
-		initIds();
+		initPlayers(numberOfPlayers);
+		initIds(numberOfPlayers);
 
 		GameBoard[] gameBoardArray = getShips();
 		runGame(gameBoardArray);
 	}
-
 
 	public static void initTupleSpaces(){
 		String port = "9000";
@@ -44,14 +43,14 @@ public class App {
 		repo.add("chat", chat);
 	}
 
-	public static void initPlayers(){
+	public static void initPlayers(int numberOfPlayers){
 		for (int i = 0; i < numberOfPlayers; i++) {
 			alivePlayers.add(i);
 		}
 		Arrays.fill(playerXAlive, true);
 	}
 
-	public static void initIds(){
+	public static void initIds(int numberOfPlayers){
 		for (int i = 0; i < numberOfPlayers; i++) {
 			try {
 				idSpace.put(i, numberOfPlayers, sizeOfMap);
@@ -86,10 +85,10 @@ public class App {
 
 		Object[] res;
 		int x, y, playerHit;
-		boolean hit, shootAgain, samePlace;
+		boolean hit, shootAgain, samePlace, deadPlayer;
 		while(true){
 			if (alivePlayers.size() == 1) {
-				serverToPlayer.put("Gameover");
+				serverToPlayer.put("Win", alivePlayers.get(0));
 				break;
 			}
 			for (int i = 0; i < numberOfPlayers; i++) {
@@ -100,23 +99,30 @@ public class App {
 							res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
 							x = (int) res[2]; y = (int) res[3]; playerHit = (int) res[4];
 							samePlace = gameBoardArray[playerHit].getHit(x, y);
-						} while (samePlace);
+
+							deadPlayer = playerXAlive[playerHit];
+						} while (samePlace || !deadPlayer);
+
 						hit = gameBoardArray[playerHit].setHit(x, y);
 						shootAgain = hit;
-						for (int j : alivePlayers) {
+						for (int j = 0; j < numberOfPlayers; j++) {
 							serverToPlayer.put("Shot", j, x, y, playerHit, hit);
 						}
 						if(gameBoardArray[playerHit].isGameover()) {
 							playerXAlive[playerHit] = false;
 							int tempPos = alivePlayers.indexOf(playerHit);
 							alivePlayers.remove(tempPos);
-							serverToPlayer.put("Gameover", playerHit);
-							if(alivePlayers.size() == 1) {
+
+							for (int j = 0; j < numberOfPlayers; j++){
+								serverToPlayer.put("Gameover", j,  playerHit);
+							}
+
+							if (alivePlayers.size() == 1){
 								shootAgain = false;
 							}
+
 						}
 					} while (shootAgain);
-
 				}
 			}
 		}

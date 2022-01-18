@@ -94,6 +94,7 @@ public class Controller implements Initializable {
         listenForTurn();
         listenForShots();
         listenForGameOver();
+        listenForWin();
         chatListener();
     }
 
@@ -142,7 +143,7 @@ public class Controller implements Initializable {
                     int v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
-                    //ui.setInactive(oButtons);
+
                 }
             }
         }
@@ -171,7 +172,10 @@ public class Controller implements Initializable {
                 playerToServer.put("Shot", id, x, y, board);
                 this.turn = false;
                 lStatusbar.setText("Opponents turn");
-                //ui.setInactive(oButtons);
+                for (int i : otherPlayers){
+                    ui.setInactive(oButtons[i]);
+                }
+
             }
         } catch (InterruptedException e) {}
     }
@@ -212,11 +216,8 @@ public class Controller implements Initializable {
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
                             widgetContainer.getChildren().remove(rotateBtn);
-                            lStatusbar.setText("Opponents turn");
+                            lStatusbar.setText(id == 0 ? "Your turn" : "Opponents turn");
                             genOpnBoard(SIZE, numberOfPlayers);
-                            if (id == 0){
-                                //ui.setActive(oButtons);
-                            }
                         }
                     });
                 return 1;
@@ -230,13 +231,16 @@ public class Controller implements Initializable {
     public void listenForTurn(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
+                serverToPlayer.query(new ActualField("Start"));
                 while(true){
                     serverToPlayer.get(new ActualField("Turn"), new ActualField(id));
                     Platform.runLater(new Runnable() {
                         @Override public void run() {
                             lStatusbar.setText("Your turn");
                             setTurn();
-                            //ui.setActive(oButtons);
+                            for (int i : otherPlayers){
+                                ui.setActive(oButtons[i]);
+                            }
                         }
                     });
                 }
@@ -249,14 +253,25 @@ public class Controller implements Initializable {
     public void listenForGameOver(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
-                serverToPlayer.query(new ActualField("Gameover"), new ActualField(id));
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        setGameOver();
-                        lStatusbar.setText("Gameover");
-                    }
-                });
-                return 1;
+                while(true){
+                    Object[] res = serverToPlayer.get(new ActualField("Gameover"), new ActualField(id), new FormalField(Integer.class));
+                    int playerHit = (int) res[2];
+
+                    Platform.runLater(new Runnable() {
+                        @Override public void run() {
+                            if (playerHit == id){
+                                setGameOver();
+                                lStatusbar.setText("Gameover");
+                                ui.setGameover(pButtons);
+                            } else {
+                                ui.setGameover(oButtons[playerHit]);
+                                ui.setInactive(oButtons[playerHit]);
+                                int tempIndex = otherPlayers.indexOf(playerHit);
+                                otherPlayers.remove(tempIndex);
+                            }
+                        }
+                    });
+                }
             }
         };
         Thread th = new Thread(task);
@@ -287,6 +302,23 @@ public class Controller implements Initializable {
                     });
                 }
             }
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
+    }
+    public void listenForWin(){
+        Task<Integer> task = new Task<Integer>() {
+            @Override protected Integer call() throws Exception {
+                serverToPlayer.get(new ActualField("Win"),  new ActualField(id));
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        lStatusbar.setText("Winner");
+                    }
+                });
+            return 1;
+            }
+
         };
         Thread th = new Thread(task);
         th.setDaemon(true);

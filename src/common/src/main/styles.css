@@ -9,26 +9,30 @@
 	-fx-background-color: #e0e0e0;
 	-fx-border-color: #b3b3b3;
 	-fx-background-radius: 0;
-	-fx-pref-width: 36px;
-	-fx-pref-height: 36px;
+	-fx-pref-width: 32px;
+	-fx-pref-height: 32px;
 }
 .opn {
-    -fx-pref-width: 30px;
-	-fx-pref-height: 30px;
+    -fx-pref-width: 28px;
+	-fx-pref-height: 28px;
 }
 
-.opn:hover {
-    -fx-background-color: #c4c4c4;
-}
 .opnBoard {
     -fx-padding: 5px;
 }
 .inactive:hover {
     -fx-background-color: #e0e0e0;
 }
+.active:hover {
+    -fx-background-color: #c4c4c4;
+}
 .hover {
     -fx-background-color: #c4c4c4;
 }
+.dead-field {
+    -fx-background-color: #888888;
+}
+
 .settings {
     -fx-font-weight: bold;
 	-fx-font-family: Montserrat;
