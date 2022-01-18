@@ -97,7 +97,9 @@ public class Controller implements Initializable {
             chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
+                System.out.println("Mark Z");
                 Object[] idAndPlayersAndSize = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+                System.out.println((String) idAndPlayersAndSize[0]);
                 id = (int) idAndPlayersAndSize[0];
                 numberOfPlayers = (int) idAndPlayersAndSize[1];
                 SIZE = (int)idAndPlayersAndSize[2];

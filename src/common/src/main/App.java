@@ -8,7 +8,7 @@ public class App {
 	private static Space idSpace;
 	private static Space serverToPlayer;
 	private static Space playerToServer;
-	private static int numberOfPlayers = 4;
+	private static int numberOfPlayers = 1;
 	private static int numberOfShips = 5;
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
@@ -19,11 +19,15 @@ public class App {
 
 	public static void main(String[] argv) throws InterruptedException {
 		initTupleSpaces();
+		System.out.println("We are here A");
 		initPlayers();
+		System.out.println("We are here B");
 		initIds();
-
+		System.out.println("We are here C");
 		GameBoard[] gameBoardArray = getShips();
+		System.out.println("We are here D");
 		runGame(gameBoardArray);
+		System.out.println("We are here E");
 	}
 
 
