@@ -150,7 +150,7 @@ public class Controller implements Initializable {
                 lStatusbar.setText("Place ships");
                 shipNumber = setShip(x, y, shipNumber);
                 if (shipNumber == 6) {
-                    lStatusbar.setText("Waiting for opponent to place ships");
+                    lStatusbar.setText("Waiting for opponents to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
                 }

@@ -24,7 +24,7 @@ public class ServerMain extends Application {
             }
         });
 
-        BorderPane root = loader.load();
+        VBox root = loader.load();
         primaryStage.setTitle("Battleship Server");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

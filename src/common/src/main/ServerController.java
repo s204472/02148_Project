@@ -3,6 +3,7 @@ package common.src.main;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -17,7 +18,8 @@ public class ServerController {
     private static Space playerToServer;
     private static Space chat;
 
-    private static int numberOfPlayers = 2, numberOfShips = 4, sizeOfMap = 10;
+    private static int numberOfPlayers = 2;
+    private static int numberOfShips, sizeOfMap;
 
     private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
     private static boolean[] playerXAlive = new boolean[numberOfPlayers];;
@@ -26,26 +28,47 @@ public class ServerController {
     @FXML
     private TextField customSize, customShips;
     @FXML
+    private Button createBtn, exitBtn;
+    @FXML
+    private RadioButton players2, players3, players4, players5;
+    @FXML
     private Label status;
+    @FXML
+    public void handleExit(){
+        System.exit(0);
+    }
 
     public void createCustomGame() throws Exception {
         try {
             sizeOfMap = Integer.parseInt(customSize.getText());
             numberOfShips = Integer.parseInt(customShips.getText());
+            System.out.println(numberOfShips);
             if (!legalShipCount(numberOfShips) && !legalBoardSize(sizeOfMap)){
-                throw new IllegalArgumentException("Illegal board size and number of ships");
+                throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 6)");
             } else if (!legalShipCount(numberOfShips)){
-                throw new IllegalArgumentException("Illegal number of ships");
+                throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 6)");
             } else if (!legalBoardSize(sizeOfMap)){
-                throw new IllegalArgumentException("Illegal board size");
+                throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
-            status.setText("Server started...");
+
+
+            setServerRunning();
+
             startGame();
         } catch (NumberFormatException e){
-            status.setText("Illegal input.");
+            status.setText("Please input integers only");
         } catch (IllegalArgumentException e){
             status.setText(e.getMessage());
         }
+    }
+    public void setServerRunning(){
+        customSize.setDisable(true);
+        customShips.setDisable(true);
+        createBtn.setText("Server started...");
+        createBtn.setDisable(true);
+        players2.setDisable(true); players3.setDisable(true); players4.setDisable(true); players5.setDisable(true);
+        exitBtn.setText("Close connection");
+        status.setText("Server started. Please connect players.");
     }
     public void playerSelecter(ActionEvent e) {
         numberOfPlayers = Integer.parseInt(((RadioButton) e.getSource()).getId());
