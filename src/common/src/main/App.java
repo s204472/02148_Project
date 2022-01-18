@@ -9,6 +9,8 @@ public class App {
 	private static Space serverToPlayer;
 	private static Space playerToServer;
 	private static int numberOfPlayers = 4;
+	private static int numberOfShips = 5;
+	private static int[] shipConfiguration = new int[numberOfShips];
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
 	private static boolean[] playerXAlive = new boolean[numberOfPlayers];;
@@ -17,6 +19,8 @@ public class App {
 
 	public static void main(String[] argv) throws InterruptedException {
 		initTupleSpaces();
+		//replace below with something that comes from UI
+		shipConfiguration = new int[]{2, 3, 3, 4, 5};
 		initPlayers(numberOfPlayers);
 		initIds(numberOfPlayers);
 
@@ -53,7 +57,7 @@ public class App {
 	public static void initIds(int numberOfPlayers){
 		for (int i = 0; i < numberOfPlayers; i++) {
 			try {
-				idSpace.put(i, numberOfPlayers, sizeOfMap);
+				idSpace.put(i, numberOfPlayers, sizeOfMap, shipConfiguration);
 			} catch (Exception e){}
 		}
 		for (int i = 0; i < numberOfPlayers; i++) {

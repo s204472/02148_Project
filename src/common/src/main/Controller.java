@@ -64,6 +64,8 @@ public class Controller implements Initializable {
     private static RemoteSpace chat;
     private boolean turn = false;
     private boolean gameOver = false;
+    private int[] shipConfiguration;
+    private int numberOfShips;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
 
@@ -78,10 +80,12 @@ public class Controller implements Initializable {
             chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
-                Object[] idAndPlayersAndSize = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
-                id = (int) idAndPlayersAndSize[0];
-                numberOfPlayers = (int) idAndPlayersAndSize[1];
-                SIZE = (int)idAndPlayersAndSize[2];
+                Object[] objects = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer[].class));
+                id = (int) objects[0];
+                numberOfPlayers = (int) objects[1];
+                SIZE = (int)objects[2];
+                shipConfiguration = (int[]) objects[3];
+                numberOfShips = 
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
                 board = new GameBoard(SIZE);
