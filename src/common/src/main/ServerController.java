@@ -37,6 +37,10 @@ public class ServerController {
     public void handleExit(){
         System.exit(0);
     }
+    @FXML
+    public void playerSelector(ActionEvent e) {
+        numberOfPlayers = Integer.parseInt(((RadioButton) e.getSource()).getId());
+    }
 
     public void createCustomGame() throws Exception {
         try {
@@ -51,10 +55,9 @@ public class ServerController {
                 throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
 
-
             setServerRunning();
-
             startGame();
+
         } catch (NumberFormatException e){
             status.setText("Please input integers only");
         } catch (IllegalArgumentException e){
@@ -70,9 +73,7 @@ public class ServerController {
         exitBtn.setText("Close connection");
         status.setText("Server started. Please connect players.");
     }
-    public void playerSelecter(ActionEvent e) {
-        numberOfPlayers = Integer.parseInt(((RadioButton) e.getSource()).getId());
-    }
+
     public boolean legalBoardSize(int x){
         return x >= 7 && x <= 13;
     }
@@ -98,7 +99,7 @@ public class ServerController {
         th.start();
     }
     public static void initTupleSpaces(){
-        String port = "9000";
+        String port = "9001";
         String host = "localhost";
         String uri = "tcp://" + host + ":" + port + "/?conn";
         SpaceRepository repo = new SpaceRepository();

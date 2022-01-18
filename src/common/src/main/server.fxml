@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="520.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.ServerController">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="550.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.ServerController">
    <children>
       <Label text="Battleship Server Setup">
          <font>
@@ -20,11 +20,6 @@
             <Insets left="10.0" right="10.0" top="30.0" />
          </padding>
       </Label>
-      <TextField fx:id="customShips1" alignment="CENTER_RIGHT" editable="false" prefHeight="1.0" prefWidth="100.0" promptText="2 - 6" visible="false">
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" />
-         </padding>
-      </TextField>
       <VBox prefWidth="100.0">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="200.0">
@@ -81,7 +76,7 @@
                   </Label>
                   <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                      <children>
-                        <RadioButton id="2" fx:id="players2" mnemonicParsing="false" onAction="#playerSelecter" selected="true" text="2">
+                        <RadioButton id="2" fx:id="players2" mnemonicParsing="false" onAction="#playerSelector" selected="true" text="2">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
@@ -89,17 +84,17 @@
                               <ToggleGroup fx:id="Play" />
                            </toggleGroup>
                         </RadioButton>
-                        <RadioButton id="3" fx:id="players3" mnemonicParsing="false" onAction="#playerSelecter" text="3" toggleGroup="$Play">
+                        <RadioButton id="3" fx:id="players3" mnemonicParsing="false" onAction="#playerSelector" text="3" toggleGroup="$Play">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </RadioButton>
-                        <RadioButton id="4" fx:id="players4" mnemonicParsing="false" onAction="#playerSelecter" text="4" toggleGroup="$Play">
+                        <RadioButton id="4" fx:id="players4" mnemonicParsing="false" onAction="#playerSelector" text="4" toggleGroup="$Play">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </RadioButton>
-                        <RadioButton id="5" fx:id="players5" mnemonicParsing="false" onAction="#playerSelecter" text="5" toggleGroup="$Play">
+                        <RadioButton id="5" fx:id="players5" mnemonicParsing="false" onAction="#playerSelector" text="5" toggleGroup="$Play">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
