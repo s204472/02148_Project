@@ -108,8 +108,12 @@ public class App {
 						}
 						if(gameBoardArray[playerHit].isGameover()) {
 							playerXAlive[playerHit] = false;
-							alivePlayers.remove(playerHit);
+							int tempPos = alivePlayers.indexOf(playerHit);
+							alivePlayers.remove(tempPos);
 							serverToPlayer.put("Gameover", playerHit);
+							if(alivePlayers.size() == 1) {
+								shootAgain = false;
+							}
 						}
 					} while (shootAgain);
 

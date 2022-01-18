@@ -146,7 +146,6 @@ public class Controller implements Initializable {
                 }
             }
         }
-
     }
 
     @FXML
