@@ -79,7 +79,7 @@ public class Controller implements Initializable {
     private static RemoteSpace chat;
     private boolean turn = false;
     private boolean gameover = false;
-    private static String selectedPlayers;
+
 
     private boolean gameOver = false;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
@@ -116,8 +116,7 @@ public class Controller implements Initializable {
         chatListener();
     }
 
-    public static void setGame(GameBoard gameBoard) {board = gameBoard;}
-    public static void selectPlayers(String players) {selectedPlayers = players;}
+
     private void newGame() {
         Scene tableViewScene = null;
         try {

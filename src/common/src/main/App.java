@@ -9,6 +9,7 @@ public class App {
 	private static Space serverToPlayer;
 	private static Space playerToServer;
 	private static int numberOfPlayers = 4;
+	private static int numberOfShips = 5;
 	private static int sizeOfMap = 10;
 	private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
 	private static boolean[] playerXAlive = new boolean[numberOfPlayers];
@@ -81,6 +82,9 @@ public class App {
 		}
 		return gameBoardArray;
 	}
+	public static void setGameSize(int boardSize) {sizeOfMap = boardSize;}
+	public static void selectPlayers(int players) {numberOfPlayers = players;}
+	public static void selectNumberOfShips(int ships) {numberOfShips = ships;}
 
 	public static void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
 		serverToPlayer.put("Start");
@@ -118,6 +122,7 @@ public class App {
 			}
 		}
 	}
+
 }
 
 
