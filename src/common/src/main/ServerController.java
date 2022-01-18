@@ -22,8 +22,7 @@ public class ServerController {
     private static int numberOfShips, sizeOfMap;
 
     private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
-    private static boolean[] playerXAlive = new boolean[numberOfPlayers];;
-
+    private static boolean[] playerXAlive;
 
     @FXML
     private TextField customSize, customShips;
@@ -46,7 +45,6 @@ public class ServerController {
         try {
             sizeOfMap = Integer.parseInt(customSize.getText());
             numberOfShips = Integer.parseInt(customShips.getText());
-            System.out.println(numberOfShips);
             if (!legalShipCount(numberOfShips) && !legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 6)");
             } else if (!legalShipCount(numberOfShips)){
@@ -56,6 +54,7 @@ public class ServerController {
             }
 
             setServerRunning();
+            playerXAlive = new boolean[numberOfPlayers];
             startGame();
 
         } catch (NumberFormatException e){
@@ -168,15 +167,15 @@ public class ServerController {
                 if (playerXAlive[i]) {
                     do {
                         do {
+                            System.out.println("Player " + i + "'s turn");
                             serverToPlayer.put("Turn", i);
                             res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
                             x = (int) res[2]; y = (int) res[3]; playerHit = (int) res[4];
                             samePlace = gameBoardArray[playerHit].getHit(x, y);
-
                             deadPlayer = playerXAlive[playerHit];
                         } while (samePlace || !deadPlayer);
-
                         hit = gameBoardArray[playerHit].setHit(x, y);
+                        System.out.println("Player " + i + " shot player " + playerHit + ": " + hit);
                         shootAgain = hit;
                         for (int j = 0; j < numberOfPlayers; j++) {
                             serverToPlayer.put("Shot", j, x, y, playerHit, hit);
