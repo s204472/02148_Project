@@ -18,7 +18,6 @@ public class App {
 
 	private static int numPlayers = 2;
 
-
 	public static void main(String[] argv) throws InterruptedException {
 		for (int i=0; i < numberOfPlayers; i++) {
 		    alivePlayers.add(i);
