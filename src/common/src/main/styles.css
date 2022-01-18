@@ -1,7 +1,10 @@
 * {
     -fx-font-family:Montserrat;
 }
-
+.statusbar {
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
 .fields {
 	-fx-background-color: #e0e0e0;
 	-fx-border-color: #b3b3b3;
@@ -10,12 +13,15 @@
 	-fx-pref-height: 36px;
 }
 .opn {
-    -fx-pref-width: 18px;
-	-fx-pref-height: 18px;
+    -fx-pref-width: 30px;
+	-fx-pref-height: 30px;
 }
 
 .opn:hover {
     -fx-background-color: #c4c4c4;
+}
+.opnBoard {
+    -fx-padding: 5px;
 }
 .inactive:hover {
     -fx-background-color: #e0e0e0;
