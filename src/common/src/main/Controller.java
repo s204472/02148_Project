@@ -164,8 +164,9 @@ public class Controller implements Initializable {
     void handleOpnClick(int board, int x, int y) {
         try {
             if (this.turn && !gameOver){
-                System.out.println("Shot by player on " + x + ":" + y);
+                System.out.println("Player " + id + " shot at player " + board);
                 playerToServer.put("Shot", id, x, y, board);
+                System.out.println("Test");
                 this.turn = false;
                 lStatusbar.setText("Opponents turn");
                 for (int i : otherPlayers){

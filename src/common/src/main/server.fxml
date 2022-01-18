@@ -6,104 +6,141 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="menuScene" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.ServerController">
-   <center>
-      <GridPane alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="550.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.ServerController">
+   <children>
+      <Label text="Battleship Server Setup">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+         <padding>
+            <Insets left="10.0" right="10.0" top="30.0" />
+         </padding>
+      </Label>
+      <VBox prefWidth="100.0">
          <children>
-            <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Enter size of board:" textAlignment="RIGHT">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </Label>
-            <Label text="Enter number of ships:" GridPane.rowIndex="1">
-               <font>
-                  <Font size="20.0" />
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </Label>
-            <TextField fx:id="customSize" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="50.0" GridPane.columnIndex="1" />
-            <TextField fx:id="customShips" layoutX="310.0" layoutY="201.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="50.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-         </children>
-         <opaqueInsets>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-         </opaqueInsets>
-      </GridPane>
-   </center>
-   <bottom>
-      <AnchorPane BorderPane.alignment="CENTER">
-         <children>
-            <Button layoutX="659.0" layoutY="12.0" mnemonicParsing="false" onAction="#createCustomGame" text="Create Game">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </Button>
-            <Label fx:id="status" layoutX="226.0" layoutY="21.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="200.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" text="Board size: " HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <TextField fx:id="customSize" alignment="CENTER_RIGHT" prefWidth="100.0" promptText="7 - 13">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </TextField>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="200.0">
+               <children>
+                  <Label text="Number of ships:">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <TextField fx:id="customShips" alignment="CENTER_RIGHT" prefWidth="100.0" promptText="2 - 6">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </TextField>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="200.0">
+               <children>
+                  <Label text="Select players:">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <RadioButton id="2" fx:id="players2" mnemonicParsing="false" onAction="#playerSelector" selected="true" text="2">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                           <toggleGroup>
+                              <ToggleGroup fx:id="Play" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton id="3" fx:id="players3" mnemonicParsing="false" onAction="#playerSelector" text="3" toggleGroup="$Play">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </RadioButton>
+                        <RadioButton id="4" fx:id="players4" mnemonicParsing="false" onAction="#playerSelector" text="4" toggleGroup="$Play">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </RadioButton>
+                        <RadioButton id="5" fx:id="players5" mnemonicParsing="false" onAction="#playerSelector" text="5" toggleGroup="$Play">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </RadioButton>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
          </children>
          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            <Insets bottom="10.0" left="80.0" right="80.0" top="10.0" />
          </padding>
-      </AnchorPane>
-   </bottom>
-   <right>
-      <VBox prefHeight="400.0" prefWidth="111.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="TOP_LEFT" text="Select players:">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
-            <RadioButton id="2" fx:id="players2" mnemonicParsing="false" onAction="#playerSelecter" selected="true" text="2 Players">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-               <toggleGroup>
-                  <ToggleGroup fx:id="Players" />
-               </toggleGroup>
-            </RadioButton>
-            <RadioButton id="3" fx:id="players3" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" onAction="#playerSelecter" text="3 Players" toggleGroup="$Players">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </RadioButton>
-            <RadioButton id="4" fx:id="players4" layoutX="10.0" layoutY="72.0" mnemonicParsing="false" onAction="#playerSelecter" text="4 Players" toggleGroup="$Players">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </RadioButton>
-            <RadioButton id="5" fx:id="players5" mnemonicParsing="false" onAction="#playerSelecter" text="5 Players" toggleGroup="$Players">
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-            </RadioButton>
-         </children>
-         <BorderPane.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </BorderPane.margin>
       </VBox>
-   </right>
-</BorderPane>
+      <Label fx:id="status" textFill="#ff7070">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+         <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+         </padding>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="60.0" prefWidth="200.0">
+         <children>
+            <Button fx:id="createBtn" alignment="CENTER" mnemonicParsing="false" onAction="#createCustomGame" prefWidth="150.0" style="-fx-font-weight: bold;" text="Create Game">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="exitBtn" alignment="CENTER" mnemonicParsing="false" onAction="#handleExit" prefWidth="150.0" style="-fx-font-weight: bold;" text="Exit">
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</VBox>
