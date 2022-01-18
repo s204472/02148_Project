@@ -43,7 +43,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="main" prefHeight="720.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.Controller">
+<VBox fx:id="main" prefHeight="680.0" prefWidth="1080.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.Controller">
   <children>
       <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0">
          <columnConstraints>
@@ -52,8 +52,8 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints maxHeight="403.0" minHeight="43.0" prefHeight="43.0" />
-            <RowConstraints maxHeight="448.0" minHeight="0.0" prefHeight="373.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="152.0" minHeight="0.0" prefHeight="54.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="448.0" minHeight="0.0" prefHeight="327.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="152.0" minHeight="0.0" prefHeight="72.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="260.0" minHeight="0.0" prefHeight="232.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
