@@ -35,22 +35,19 @@ public class GameBoard {
         return board[x][y].getHit();
     }
 
-    public boolean shipInTheway(int x, int y, int shipLength, boolean rotated) {
-        boolean inTheWay = false;
+    public boolean shipInTheWay(int x, int y, int shipLength, boolean rotated) {
+        boolean inTheWay;
         for(int i = 0; i < shipLength; i++){
             if(rotated) {
                 inTheWay = board[x + i][y].isShip();
-                if(inTheWay){
-                    return inTheWay;
-                }
             } else {
                 inTheWay = board[x][y + i].isShip();
-                if(inTheWay){
-                    return inTheWay;
-                }
+            }
+            if(inTheWay){
+                return true;
             }
         }
-        return inTheWay;
+        return false;
     }
 }
 

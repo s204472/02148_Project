@@ -10,16 +10,16 @@ public class Field {
     }
 
     public boolean setHit(){
-        this.hit = true;
-        return this.isShip;
+        hit = true;
+        return isShip;
     }
     public boolean getHit(){
-        return this.hit;
+        return hit;
     }
     public void setShip(){
-        this.isShip = true;
+        isShip = true;
     }
     public boolean isShip(){
-        return this.isShip;
+        return isShip;
     }
 }
