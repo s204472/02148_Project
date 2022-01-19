@@ -22,10 +22,10 @@ public class PlayerMain extends Application {
                 return new Controller();
             }
         });
-
-        VBox root = loader.load();
         primaryStage.setTitle("Battleship");
+        VBox root = loader.load();
         Scene scene = new Scene(root);
+        //Scene scene = FXMLLoader.load(PlayerMain.class.getResource("common/src/main/customGame.fxml"));
         primaryStage.setScene(scene);
         primaryStage.show();
     }
