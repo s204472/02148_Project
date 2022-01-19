@@ -157,9 +157,7 @@ public class Controller implements Initializable {
     void handleOpnClick(int board, int x, int y) {
         try {
             if (this.turn && !gameOver){
-                System.out.println("Player " + id + " shot at player " + board);
                 playerToServer.put("Shot", id, x, y, board);
-                System.out.println("Test");
                 this.turn = false;
                 lStatusbar.setText("Opponents turn");
                 for (int i : otherPlayers){
@@ -257,7 +255,6 @@ public class Controller implements Initializable {
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
                 while(true){
-                    System.out.println("Waiting for response");
                     Object[] res = serverToPlayer.get(new ActualField("Shot"),  new ActualField(id), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Boolean.class));
                     int x = (int) res[2];
                     int y = (int) res[3];
