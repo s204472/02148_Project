@@ -118,9 +118,10 @@ public class ServerController {
                 idSpace.put(i, numberOfPlayers, sizeOfMap, numberOfShips);
             }
             for(int i = 0; i < numberOfPlayers; i++){
-                alivePlayers.add((Integer) playerToServer.get(new ActualField("User"), new FormalField(Integer.class))[1]);
+                playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
             }
         } catch (Exception ignored){}
+        System.out.println("Init" + alivePlayers.toString());
     }
 
     public static GameBoard[] getShips(){
@@ -143,6 +144,7 @@ public class ServerController {
         while(true){
             if (alivePlayers.size() == 1) {
                 serverToPlayer.put("Win", alivePlayers.get(0));
+                System.out.println("Win");
                 break;
             }
             for (int i = 0; i < numberOfPlayers; i++) {
@@ -169,6 +171,7 @@ public class ServerController {
                                 shootAgain = false;
                             }
                         }
+                        System.out.println(alivePlayers.toString());
                     } while (shootAgain);
                 }
             }

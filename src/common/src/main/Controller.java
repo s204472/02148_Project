@@ -129,8 +129,7 @@ public class Controller implements Initializable {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
                     oButtons[i][j][k] = new Button();
-                    oButtons[i][j][k].getStyleClass().add("fields");
-                    oButtons[i][j][k].getStyleClass().add("opn");
+                    oButtons[i][j][k].getStyleClass().addAll("fields", "opn");
                     int x = i, u = j, v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
