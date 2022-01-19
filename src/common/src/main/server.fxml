@@ -55,7 +55,7 @@
                   </Label>
                   <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                      <children>
-                        <TextField fx:id="customShips" alignment="CENTER_RIGHT" prefWidth="100.0" promptText="2 - 6">
+                        <TextField fx:id="customShips" alignment="CENTER_RIGHT" prefWidth="100.0" promptText="2 - 5">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>

@@ -34,7 +34,7 @@ public class ChatHelper {
                         @Override public void run() {
                             HBox msgContainer = new HBox();
                             msgContainer.getStyleClass().add("msgBox");
-                            Text sender = new Text("Player " + from + ": ");
+                            Text sender = new Text("Player " + (from + 1) + ": ");
                             sender.getStyleClass().add("msgOpn");
                             Text txt = new Text(msg + "\n");
                             msgContainer.getChildren().add(sender);

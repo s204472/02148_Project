@@ -46,7 +46,7 @@ public class Controller implements Initializable {
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}, {2, 3, 3, 4, 4, 5}};
+    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}};
     private Button[][] pButtons;
     private Button[][][] oButtons;
 
@@ -73,7 +73,7 @@ public class Controller implements Initializable {
                 numberOfShipsToPlace = (int) objects[3];
 
                 playerToServer.put("User", id);
-                lPlayer.setText("Player " + id);
+                lPlayer.setText("Player " + (id + 1));
                 board = new GameBoard(size);
                 opponentBoards = new GridPane[numberOfPlayers];
 

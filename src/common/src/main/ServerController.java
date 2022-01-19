@@ -44,9 +44,9 @@ public class ServerController {
             sizeOfMap = Integer.parseInt(customSize.getText());
             numberOfShips = Integer.parseInt(customShips.getText());
             if (legalShipCount(numberOfShips) && legalBoardSize(sizeOfMap)){
-                throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 6)");
+                throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 5)");
             } else if (legalShipCount(numberOfShips)){
-                throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 6)");
+                throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 5)");
             } else if (legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
@@ -74,7 +74,7 @@ public class ServerController {
         return x < 7 || x > 13;
     }
     public boolean legalShipCount(int x){
-        return x < 2 || x > 6;
+        return x < 2 || x > 5;
     }
 
     public void startGame() {
