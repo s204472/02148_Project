@@ -182,7 +182,6 @@ public class ServerController {
                         System.out.println("Player " + i + " shot player " + playerHit + ": " + hit);
                         shootAgain = hit;
                         for (int j = 0; j < numberOfPlayers; j++) {
-                            System.out.println("6: " + i + " " + j);
                             serverToPlayer.put("Shot", j, x, y, playerHit, hit);
                         }
                         if(gameBoardArray[playerHit].isGameover()) {
