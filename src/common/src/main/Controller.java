@@ -80,13 +80,14 @@ public class Controller implements Initializable {
                 serverToPlayer.query(new ActualField("Place ships"));
 
                 ch = new ChatHelper(id, numberOfPlayers, chat, msgArea);
+                ch.listen();
                 genPlayerBoard(size, size);
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
 
         waitForOpnBoard();
         startListeners();
-        ch.listen();
+
     }
     public void startListeners(){
         listenForTurn();
