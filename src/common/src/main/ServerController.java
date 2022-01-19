@@ -139,7 +139,7 @@ public class ServerController {
 
         Object[] res;
         int x, y, playerHit;
-        boolean hit, shootAgain, samePlace, deadPlayer;
+        boolean hit, shootAgain;
         while(true){
             if (alivePlayers.size() == 1) {
                 serverToPlayer.put("Win", alivePlayers.get(0));
@@ -152,9 +152,7 @@ public class ServerController {
                             serverToPlayer.put("Turn", i);
                             res = playerToServer.get(new ActualField("Shot"), new ActualField(i), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
                             x = (int) res[2]; y = (int) res[3]; playerHit = (int) res[4];
-                            samePlace = gameBoardArray[playerHit].getHit(x, y);
-                            deadPlayer = playerXAlive[playerHit];
-                        } while (samePlace || !deadPlayer);
+                        } while (gameBoardArray[playerHit].getHit(x, y) || !playerXAlive[playerHit]);
                         hit = gameBoardArray[playerHit].setHit(x, y);
                         shootAgain = hit;
                         for (int j = 0; j < numberOfPlayers; j++) {
