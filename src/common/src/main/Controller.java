@@ -149,7 +149,7 @@ public class Controller implements Initializable {
         try {
             if(!shipsPlaced) {
                 lStatusbar.setText("Place ships");
-                numberOfShipsPlaced += setShip(x, y, shipConfig[(numberOfShipsToPlace-1)][numberOfShipsPlaced]);
+                numberOfShipsPlaced += setShip(x, y, shipConfig[(numberOfShipsToPlace-2)][numberOfShipsPlaced]);
                 if (numberOfShipsToPlace == numberOfShipsPlaced) {
                     lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
@@ -367,8 +367,8 @@ public class Controller implements Initializable {
     }
 
     public void showShipHover(int x, int y){
-        int l = shipConfig[numberOfShipsToPlace-1][numberOfShipsPlaced];
         if (!shipsPlaced){
+            int l = shipConfig[numberOfShipsToPlace-2][numberOfShipsPlaced];
             if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
                     ui.toggleShipHover(pButtons[x + (rotated ? i : 0)][y + (rotated ? 0 : i)]);
