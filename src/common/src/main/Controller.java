@@ -18,7 +18,6 @@ import javafx.concurrent.Task;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -27,15 +26,11 @@ public class Controller implements Initializable {
 
 
     @FXML
-    public GridPane pGrid;
+    public GridPane pGrid, opponentBoardGrid;
     @FXML
     public GridPane[] opponentBoards;
     @FXML
-    public GridPane opponentBoardSpace;
-    @FXML
-    public Label lPlayer;
-    @FXML
-    public Label lStatusbar;
+    public Label lPlayer, lStatusbar;
     @FXML
     public VBox msgArea;
     @FXML
@@ -106,8 +101,7 @@ public class Controller implements Initializable {
             for (int j = 0; j < y; j++) {
                 pButtons[i][j] = new Button();
                 pButtons[i][j].getStyleClass().add("fields");
-                int u = i;
-                int v = j;
+                int u = i, v = j;
                 pButtons[i][j].setOnAction(event -> handlePlayerClick(u, v));
                 pButtons[i][j].hoverProperty().addListener(event -> showShipHover(u, v));
 
@@ -129,16 +123,14 @@ public class Controller implements Initializable {
         for (int i : otherPlayers)  {
             opponentBoards[i] = new GridPane();
             opponentBoards[i].getStyleClass().add("opnBoard");
-            opponentBoardSpace.add(opponentBoards[i], playerCounter % 2, playerCounter / 2);
+            opponentBoardGrid.add(opponentBoards[i], playerCounter % 2, playerCounter / 2);
             playerCounter++;
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
                     oButtons[i][j][k] = new Button();
                     oButtons[i][j][k].getStyleClass().add("fields");
                     oButtons[i][j][k].getStyleClass().add("opn");
-                    int x = i;
-                    int u = j;
-                    int v = k;
+                    int x = i, u = j, v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);
                 }

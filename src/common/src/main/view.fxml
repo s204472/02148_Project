@@ -72,7 +72,7 @@
                </children>
             </GridPane>
        <GridPane fx:id="pGrid" prefHeight="116.0" prefWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-       <GridPane fx:id="opponentBoardSpace" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+       <GridPane fx:id="opponentBoardGrid" prefHeight="116.0" prefWidth="0.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
             <HBox fx:id="widgetContainer" alignment="CENTER_LEFT" prefHeight="98.0" prefWidth="376.0" GridPane.rowIndex="2">
                <children>
                 <Button fx:id="rotateBtn" mnemonicParsing="false" onAction="#handleRotate" prefHeight="48.0" prefWidth="150.0" styleClass="settings" text="Rotate">
