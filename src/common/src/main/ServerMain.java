@@ -3,7 +3,6 @@ package common.src.main;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -24,7 +23,7 @@ public class ServerMain extends Application {
             }
         });
 
-        BorderPane root = loader.load();
+        VBox root = loader.load();
         primaryStage.setTitle("Battleship Server");
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

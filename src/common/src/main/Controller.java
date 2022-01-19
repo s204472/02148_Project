@@ -36,7 +36,7 @@ public class Controller implements Initializable {
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int shipNumber = 2;
+    public static int lengthOfCurrentShip = 2;
 
 
     @FXML
@@ -77,12 +77,13 @@ public class Controller implements Initializable {
 
 
     private boolean gameOver = false;
+    private int numberOfShips;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
-        String port = "9000"; String host = "localhost";
+        String port = "9001"; String host = "localhost";
 
         try {
             idSpace        = new RemoteSpace("tcp://" + host + ":" + port + "/id?conn");
@@ -91,12 +92,12 @@ public class Controller implements Initializable {
             chat           = new RemoteSpace("tcp://" + host + ":" + port + "/chat?conn");
 
             try {
-                System.out.println("Mark Z");
-                Object[] idAndPlayersAndSize = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
-                System.out.println((String) idAndPlayersAndSize[0]);
-                id = (int) idAndPlayersAndSize[0];
-                numberOfPlayers = (int) idAndPlayersAndSize[1];
-                SIZE = (int)idAndPlayersAndSize[2];
+
+                Object[] objects = idSpace.get(new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+                id = (int) objects[0];
+                numberOfPlayers = (int) objects[1];
+                SIZE = (int)objects[2];
+                numberOfShips = (int) objects[3];
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
                 board = new GameBoard(SIZE);
@@ -173,8 +174,8 @@ public class Controller implements Initializable {
         try {
             if(!shipsPlaced) {
                 lStatusbar.setText("Place ships");
-                shipNumber = setShip(x, y, shipNumber);
-                if (shipNumber == 6) {
+                lengthOfCurrentShip = setShip(x, y, lengthOfCurrentShip);
+                if (lengthOfCurrentShip == (numberOfShips+2)) {
                     lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
@@ -187,8 +188,9 @@ public class Controller implements Initializable {
     void handleOpnClick(int board, int x, int y) {
         try {
             if (this.turn && !gameOver){
-                System.out.println("Shot by player on " + x + ":" + y);
+                System.out.println("Player " + id + " shot at player " + board);
                 playerToServer.put("Shot", id, x, y, board);
+                System.out.println("Test");
                 this.turn = false;
                 lStatusbar.setText("Opponents turn");
                 for (int i : otherPlayers){
@@ -384,14 +386,14 @@ public class Controller implements Initializable {
             for (int j = 0; j < i; j++) {
                 board.placeShip(x + (rotated ? j : 0), y + (rotated ? 0 : j));
                 ui.showShip(pButtons, x + (rotated ? j : 0), y + (rotated ? 0 : j));
-
             }
             return i + 1;
         }
     }
 
-    public void showShipHover(int x, int y) throws IOException {
-        int l = shipNumber;
+
+    public void showShipHover(int x, int y){
+        int l = lengthOfCurrentShip;
         if (!shipsPlaced){
             if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
