@@ -9,30 +9,26 @@
 	-fx-background-color: #e0e0e0;
 	-fx-border-color: #b3b3b3;
 	-fx-background-radius: 0;
-	-fx-pref-width: 32px;
-	-fx-pref-height: 32px;
+	-fx-pref-width: 36px;
+	-fx-pref-height: 36px;
 }
 .opn {
-    -fx-pref-width: 24px;
-	-fx-pref-height: 24px;
+    -fx-pref-width: 30px;
+	-fx-pref-height: 30px;
 }
 
+.opn:hover {
+    -fx-background-color: #c4c4c4;
+}
 .opnBoard {
     -fx-padding: 5px;
 }
 .inactive:hover {
     -fx-background-color: #e0e0e0;
 }
-.active:hover {
-    -fx-background-color: #c4c4c4;
-}
 .hover {
     -fx-background-color: #c4c4c4;
 }
-.dead-field {
-    -fx-background-color: #888888;
-}
-
 .settings {
     -fx-font-weight: bold;
 	-fx-font-family: Montserrat;
@@ -45,7 +41,6 @@
     -fx-font-weight: bold;
 	-fx-font-size: 18;
 }
-
 .msgAreaContainer {
     -fx-background-color: #ffffff;
     -fx-border-radius: 0;
@@ -54,24 +49,21 @@
 .msgArea {
     -fx-padding: 10;
     -fx-background-color: #ffffff;
-}
 
+}
 .msgInput {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
-
 .msgButton {
 	-fx-font-size: 12;
 	-fx-border-radius: 0;
 	-fx-background-radius: 0;
 }
-
 .msgOpn {
     -fx-fill: Red;
     -fx-font-weight: bold;
 }
-
 .msgYou {
     -fx-fill: Blue;
     -fx-font-weight: bold;
