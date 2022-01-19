@@ -28,7 +28,7 @@ public class Controller implements Initializable {
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int lengthOfCurrentShip = 2;
+    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}, {2, 3, 3, 4, 4, 5}};
 
     @FXML
     public GridPane pGrid;
@@ -54,15 +54,14 @@ public class Controller implements Initializable {
     private Button[][] pButtons;
     private Button[][][] oButtons;
 
-    private static int id;
-    private static int numberOfPlayers;
+    private static int id, numberOfShipsToPlace, numberOfPlayers;
     private static RemoteSpace idSpace;
     private static RemoteSpace serverToPlayer;
     private static RemoteSpace playerToServer;
     private static RemoteSpace chat;
     private boolean turn = false;
     private boolean gameOver = false;
-    private int numberOfShips;
+    private int numberOfShipsPlaced = 0;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
     @Override
@@ -80,7 +79,7 @@ public class Controller implements Initializable {
                 id = (int) objects[0];
                 numberOfPlayers = (int) objects[1];
                 SIZE = (int)objects[2];
-                numberOfShips = (int) objects[3];
+                numberOfShipsToPlace = (int) objects[3];
                 playerToServer.put("User", id);
                 lPlayer.setText("Player " + id);
                 board = new GameBoard(SIZE);
@@ -150,8 +149,8 @@ public class Controller implements Initializable {
         try {
             if(!shipsPlaced) {
                 lStatusbar.setText("Place ships");
-                lengthOfCurrentShip = setShip(x, y, lengthOfCurrentShip);
-                if (lengthOfCurrentShip == (numberOfShips+2)) {
+                numberOfShipsPlaced += setShip(x, y, shipConfig[(numberOfShipsToPlace-1)][numberOfShipsPlaced]);
+                if (numberOfShipsToPlace == numberOfShipsPlaced) {
                     lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
@@ -304,6 +303,7 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
+
     public void listenForWin(){
         Task<Integer> task = new Task<Integer>() {
             @Override protected Integer call() throws Exception {
@@ -354,21 +354,20 @@ public class Controller implements Initializable {
         th.start();
     }
 
-
     public int setShip(int x, int y, int i) {
         if(SIZE < x + (rotated ? i : 0) || SIZE < y + (rotated ? 0 : i) || board.shipInTheway(x, y, i, rotated)) {
-            return i;
+            return 0;
         } else {
             for (int j = 0; j < i; j++) {
                 board.placeShip(x + (rotated ? j : 0), y + (rotated ? 0 : j));
                 ui.showShip(pButtons, x + (rotated ? j : 0), y + (rotated ? 0 : j));
             }
-            return i + 1;
+            return 1;
         }
     }
 
     public void showShipHover(int x, int y){
-        int l = lengthOfCurrentShip;
+        int l = shipConfig[numberOfShipsToPlace-1][numberOfShipsPlaced];
         if (!shipsPlaced){
             if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
