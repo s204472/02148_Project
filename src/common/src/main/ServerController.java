@@ -8,9 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import org.jspace.*;
-
-import javax.sound.midi.Soundbank;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,11 +16,9 @@ public class ServerController {
     private static Space serverToPlayer;
     private static Space playerToServer;
     private static Space chat;
-
     private static int numberOfPlayers = 2;
     private static int numberOfShips, sizeOfMap;
-
-    private static ArrayList<Integer> alivePlayers = new ArrayList<Integer>();
+    private static ArrayList<Integer> alivePlayers = new ArrayList<>();
     private static boolean[] playerXAlive;
 
     @FXML
@@ -43,15 +38,15 @@ public class ServerController {
         numberOfPlayers = Integer.parseInt(((RadioButton) e.getSource()).getId());
     }
 
-    public void createCustomGame() throws Exception {
+    public void createCustomGame() {
         try {
             sizeOfMap = Integer.parseInt(customSize.getText());
             numberOfShips = Integer.parseInt(customShips.getText());
-            if (!legalShipCount(numberOfShips) && !legalBoardSize(sizeOfMap)){
+            if (legalShipCount(numberOfShips) && legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 6)");
-            } else if (!legalShipCount(numberOfShips)){
+            } else if (legalShipCount(numberOfShips)){
                 throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 6)");
-            } else if (!legalBoardSize(sizeOfMap)){
+            } else if (legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
 
@@ -76,23 +71,21 @@ public class ServerController {
     }
 
     public boolean legalBoardSize(int x){
-        return x >= 7 && x <= 13;
+        return x < 7 || x > 13;
     }
     public boolean legalShipCount(int x){
-        return x >= 2 && x <= 6;
+        return x < 2 || x > 6;
     }
 
-    public void startGame() throws InterruptedException {
-        Task<Integer> task = new Task<Integer>() {
-            @Override protected Integer call() throws Exception {
+    public void startGame() {
+        Task<Void> task = new Task<>() {
+            @Override protected Void call() throws Exception {
                 initTupleSpaces();
                 initPlayers(numberOfPlayers);
                 initIds(numberOfPlayers);
-
                 GameBoard[] gameBoardArray = getShips();
-
                 runGame(gameBoardArray);
-                return 1;
+                return null;
             }
         };
         Thread th = new Thread(task);
@@ -100,20 +93,17 @@ public class ServerController {
         th.start();
     }
     public static void initTupleSpaces(){
-        String port = "9001";
-        String host = "localhost";
+        String port = "9001"; String host = "localhost";
         String uri = "tcp://" + host + ":" + port + "/?conn";
         SpaceRepository repo = new SpaceRepository();
         repo.addGate(uri);
         serverToPlayer = new SequentialSpace();
         playerToServer = new SequentialSpace();
         idSpace = new SequentialSpace();
-
+        chat = new SequentialSpace();
         repo.add("serverToPlayer", serverToPlayer);
         repo.add("playerToServer", playerToServer);
         repo.add("id", idSpace);
-
-        chat = new SequentialSpace();
         repo.add("chat", chat);
     }
 
@@ -125,35 +115,25 @@ public class ServerController {
     }
 
     public static void initIds(int numberOfPlayers){
-        for (int i = 0; i < numberOfPlayers; i++) {
-            try {
+        try{
+            for(int i = 0; i < numberOfPlayers; i++) {
                 idSpace.put(i, numberOfPlayers, sizeOfMap, numberOfShips);
-            } catch (Exception e){
             }
-        }
-        for (int i = 0; i < numberOfPlayers; i++) {
-            try {
-                Object[] objects = playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
-                System.out.println(objects[0] + (objects[1].toString()) + " connected");
-            } catch (InterruptedException e) {
+            for(int i = 0; i < numberOfPlayers; i++){
+                alivePlayers.add((Integer) playerToServer.get(new ActualField("User"), new FormalField(Integer.class))[1]);
             }
-        }
-        System.out.println("Players connected");
+        } catch (Exception ignored){}
     }
 
     public static GameBoard[] getShips(){
         try {
             serverToPlayer.put("Place ships");
-        } catch (InterruptedException e) {}
-
-        GameBoard[] gameBoardArray = new GameBoard[numberOfPlayers];
-
-        for (int i = 0; i < numberOfPlayers; i++) {
-            try {
+            GameBoard[] gameBoardArray = new GameBoard[numberOfPlayers];
+            for (int i = 0; i < numberOfPlayers; i++) {
                 gameBoardArray[i] = (GameBoard) playerToServer.get(new ActualField("Board"), new ActualField(i), new FormalField(GameBoard.class))[2];
-            } catch (InterruptedException e) {}
-        }
-        return gameBoardArray;
+            }
+            return gameBoardArray;
+        } catch (InterruptedException e) {return null;}
     }
 
     public static void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
@@ -168,7 +148,6 @@ public class ServerController {
                 break;
             }
             for (int i = 0; i < numberOfPlayers; i++) {
-                System.out.println(playerXAlive[i]);
                 if (playerXAlive[i]) {
                     do {
                         do {
@@ -179,21 +158,17 @@ public class ServerController {
                             deadPlayer = playerXAlive[playerHit];
                         } while (samePlace || !deadPlayer);
                         hit = gameBoardArray[playerHit].setHit(x, y);
-                        System.out.println("Player " + i + " shot player " + playerHit + ": " + hit);
                         shootAgain = hit;
                         for (int j = 0; j < numberOfPlayers; j++) {
                             serverToPlayer.put("Shot", j, x, y, playerHit, hit);
                         }
                         if(gameBoardArray[playerHit].isGameover()) {
-                            System.out.println("6.5: " + i + " ");
                             playerXAlive[playerHit] = false;
                             int tempPos = alivePlayers.indexOf(playerHit);
                             alivePlayers.remove(tempPos);
-
                             for (int j = 0; j < numberOfPlayers; j++){
                                 serverToPlayer.put("Gameover", j,  playerHit);
                             }
-
                             if (alivePlayers.size() == 1){
                                 shootAgain = false;
                             }

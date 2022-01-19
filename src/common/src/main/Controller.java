@@ -355,7 +355,7 @@ public class Controller implements Initializable {
     }
 
     public int setShip(int x, int y, int i) {
-        if(SIZE < x + (rotated ? i : 0) || SIZE < y + (rotated ? 0 : i) || board.shipInTheway(x, y, i, rotated)) {
+        if(SIZE < x + (rotated ? i : 0) || SIZE < y + (rotated ? 0 : i) || board.shipInTheWay(x, y, i, rotated)) {
             return 0;
         } else {
             for (int j = 0; j < i; j++) {
@@ -369,7 +369,7 @@ public class Controller implements Initializable {
     public void showShipHover(int x, int y){
         if (!shipsPlaced){
             int l = shipConfig[numberOfShipsToPlace-2][numberOfShipsPlaced];
-            if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
+            if(!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheWay(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
                     ui.toggleShipHover(pButtons[x + (rotated ? i : 0)][y + (rotated ? 0 : i)]);
                 }
