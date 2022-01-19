@@ -9,8 +9,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import org.jspace.*;
 
-import javax.sound.midi.Soundbank;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -99,6 +97,7 @@ public class ServerController {
         th.setDaemon(true);
         th.start();
     }
+
     public static void initTupleSpaces(){
         String port = "9001";
         String host = "localhost";

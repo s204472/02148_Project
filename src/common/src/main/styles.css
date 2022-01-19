@@ -29,7 +29,7 @@
 .hover {
     -fx-background-color: #c4c4c4;
 }
-.dead-field {
+.deadField {
     -fx-background-color: #888888;
 }
 
