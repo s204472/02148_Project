@@ -100,20 +100,16 @@ public class ServerController {
         th.start();
     }
     public static void initTupleSpaces(){
-        String port = "9001";
-        String host = "localhost";
-        String uri = "tcp://" + host + ":" + port + "/?conn";
         SpaceRepository repo = new SpaceRepository();
-        repo.addGate(uri);
+        repo.addGate(Config.getURI());
         serverToPlayer = new SequentialSpace();
         playerToServer = new SequentialSpace();
         idSpace = new SequentialSpace();
+        chat = new SequentialSpace();
 
         repo.add("serverToPlayer", serverToPlayer);
         repo.add("playerToServer", playerToServer);
         repo.add("id", idSpace);
-
-        chat = new SequentialSpace();
         repo.add("chat", chat);
     }
 
