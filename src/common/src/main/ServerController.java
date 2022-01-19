@@ -1,5 +1,6 @@
 package common.src.main;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -49,9 +50,8 @@ public class ServerController {
             } else if (legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
-
-            setServerRunning();
             playerXAlive = new boolean[numberOfPlayers];
+            setServerRunning();
             startGame();
 
         } catch (NumberFormatException e){
@@ -92,7 +92,7 @@ public class ServerController {
         th.setDaemon(true);
         th.start();
     }
-    public static void initTupleSpaces(){
+    public void initTupleSpaces(){
         SpaceRepository repo = new SpaceRepository();
         repo.addGate(Config.getURI());
         serverToPlayer = new SequentialSpace();
@@ -105,14 +105,14 @@ public class ServerController {
         repo.add("chat", chat);
     }
 
-    public static void initPlayers(int numberOfPlayers){
+    public void initPlayers(int numberOfPlayers){
         for (int i = 0; i < numberOfPlayers; i++) {
             alivePlayers.add(i);
         }
         Arrays.fill(playerXAlive, true);
     }
 
-    public static void initIds(int numberOfPlayers){
+    public void initIds(int numberOfPlayers){
         try{
             for(int i = 0; i < numberOfPlayers; i++) {
                 idSpace.put(i, numberOfPlayers, sizeOfMap, numberOfShips);
@@ -120,11 +120,16 @@ public class ServerController {
             for(int i = 0; i < numberOfPlayers; i++){
                 playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
             }
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    status.setText("All players connected. Keep server running.");
+                }
+            });
+
         } catch (Exception ignored){}
-        System.out.println("Init" + alivePlayers.toString());
     }
 
-    public static GameBoard[] getShips(){
+    public GameBoard[] getShips(){
         try {
             serverToPlayer.put("Place ships");
             GameBoard[] gameBoardArray = new GameBoard[numberOfPlayers];
@@ -135,7 +140,7 @@ public class ServerController {
         } catch (InterruptedException e) {return null;}
     }
 
-    public static void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
+    public void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
         serverToPlayer.put("Start");
 
         Object[] res;
@@ -144,7 +149,6 @@ public class ServerController {
         while(true){
             if (alivePlayers.size() == 1) {
                 serverToPlayer.put("Win", alivePlayers.get(0));
-                System.out.println("Win");
                 break;
             }
             for (int i = 0; i < numberOfPlayers; i++) {
@@ -162,8 +166,7 @@ public class ServerController {
                         }
                         if(gameBoardArray[playerHit].isGameover()) {
                             playerXAlive[playerHit] = false;
-                            int tempPos = alivePlayers.indexOf(playerHit);
-                            alivePlayers.remove(tempPos);
+                            alivePlayers.remove((Integer) playerHit);
                             for (int j = 0; j < numberOfPlayers; j++){
                                 serverToPlayer.put("Gameover", j,  playerHit);
                             }
@@ -171,7 +174,6 @@ public class ServerController {
                                 shootAgain = false;
                             }
                         }
-                        System.out.println(alivePlayers.toString());
                     } while (shootAgain);
                 }
             }
