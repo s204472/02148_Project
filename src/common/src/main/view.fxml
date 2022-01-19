@@ -79,7 +79,7 @@
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin></Button>
-                  <Label fx:id="lStatusbar" styleClass="statusbar" wrapText="true">
+                  <Label fx:id="lStatusbar" styleClass="statusbar" text="Place ships" wrapText="true">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
