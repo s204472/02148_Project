@@ -43,8 +43,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
-
 <VBox fx:id="main" prefHeight="540.0" prefWidth="960.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="common.src.main.Controller">
 
 
@@ -83,7 +81,7 @@
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin></Button>
-                  <Label fx:id="lStatusbar" styleClass="statusbar" wrapText="true">
+                  <Label fx:id="lStatusbar" styleClass="statusbar" text="Place ships" wrapText="true">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
