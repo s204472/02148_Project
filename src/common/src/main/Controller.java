@@ -63,7 +63,6 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
-        String port = "9001"; String host = "localhost";
 
         try {
             idSpace        = new RemoteSpace(Config.getURI("id"));
