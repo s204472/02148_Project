@@ -46,7 +46,7 @@ public class Controller implements Initializable {
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}, {2, 3, 3, 4, 4, 5}};
+    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}};
     private Button[][] pButtons;
     private Button[][][] oButtons;
     private boolean disconnect;
@@ -73,20 +73,21 @@ public class Controller implements Initializable {
                 numberOfShipsToPlace = (int) objects[3];
 
                 playerToServer.put("User", id);
-                lPlayer.setText("Player " + id);
+                lPlayer.setText("Player " + (id + 1));
                 board = new GameBoard(size);
                 opponentBoards = new GridPane[numberOfPlayers];
 
                 serverToPlayer.query(new ActualField("Place ships"));
 
                 ch = new ChatHelper(id, numberOfPlayers, chat, msgArea);
+                ch.listen();
                 genPlayerBoard(size, size);
             } catch (InterruptedException e) {}
         } catch (IOException e) {}
 
         waitForOpnBoard();
         startListeners();
-        ch.listen();
+
     }
     public void startListeners(){
         listenForDisconnect();
@@ -129,8 +130,7 @@ public class Controller implements Initializable {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
                     oButtons[i][j][k] = new Button();
-                    oButtons[i][j][k].getStyleClass().add("fields");
-                    oButtons[i][j][k].getStyleClass().add("opn");
+                    oButtons[i][j][k].getStyleClass().addAll("fields", "opn");
                     int x = i, u = j, v = k;
                     oButtons[i][j][k].setOnAction(event -> handleOpnClick(x, u, v));
                     opponentBoards[i].add(oButtons[i][j][k], j, k);

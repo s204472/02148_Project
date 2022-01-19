@@ -1,5 +1,6 @@
 package common.src.main;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -46,15 +47,14 @@ public class ServerController {
             sizeOfMap = Integer.parseInt(customSize.getText());
             numberOfShips = Integer.parseInt(customShips.getText());
             if (legalShipCount(numberOfShips) && legalBoardSize(sizeOfMap)){
-                throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 6)");
+                throw new IllegalArgumentException("Illegal board size and number of ships. Must be in range (7 - 13) and (2 - 5)");
             } else if (legalShipCount(numberOfShips)){
-                throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 6)");
+                throw new IllegalArgumentException("Illegal number of ships. Must be in range (2 - 5)");
             } else if (legalBoardSize(sizeOfMap)){
                 throw new IllegalArgumentException("Illegal board size. Must be in range (7 - 13)");
             }
-
-            setServerRunning();
             playerXAlive = new boolean[numberOfPlayers];
+            setServerRunning();
             startGame();
 
         } catch (NumberFormatException e){
@@ -77,7 +77,7 @@ public class ServerController {
         return x < 7 || x > 13;
     }
     public boolean legalShipCount(int x){
-        return x < 2 || x > 6;
+        return x < 2 || x > 5;
     }
 
     public void startGame() {
@@ -95,7 +95,7 @@ public class ServerController {
         th.setDaemon(true);
         th.start();
     }
-    public static void initTupleSpaces(){
+    public void initTupleSpaces(){
         SpaceRepository repo = new SpaceRepository();
         repo.addGate(Config.getURI());
         serverToPlayer = new SequentialSpace();
@@ -108,25 +108,31 @@ public class ServerController {
         repo.add("chat", chat);
     }
 
-    public static void initPlayers(int numberOfPlayers){
+    public void initPlayers(int numberOfPlayers){
         for (int i = 0; i < numberOfPlayers; i++) {
             alivePlayers.add(i);
         }
         Arrays.fill(playerXAlive, true);
     }
 
-    public static void initIds(int numberOfPlayers){
+    public void initIds(int numberOfPlayers){
         try{
             for(int i = 0; i < numberOfPlayers; i++) {
                 idSpace.put(i, numberOfPlayers, sizeOfMap, numberOfShips);
             }
             for(int i = 0; i < numberOfPlayers; i++){
-                alivePlayers.add((Integer) playerToServer.get(new ActualField("User"), new FormalField(Integer.class))[1]);
+                playerToServer.get(new ActualField("User"), new FormalField(Integer.class));
             }
+            Platform.runLater(new Runnable() {
+                @Override public void run() {
+                    status.setText("All players connected. Keep server running.");
+                }
+            });
+
         } catch (Exception ignored){}
     }
 
-    public static GameBoard[] getShips(){
+    public GameBoard[] getShips(){
         try {
             serverToPlayer.put("Place ships");
             GameBoard[] gameBoardArray = new GameBoard[numberOfPlayers];
@@ -137,7 +143,7 @@ public class ServerController {
         } catch (InterruptedException e) {return null;}
     }
 
-    public static void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
+    public void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
         serverToPlayer.put("Start");
 
         Object[] res;
@@ -163,8 +169,7 @@ public class ServerController {
                         }
                         if(gameBoardArray[playerHit].isGameover()) {
                             playerXAlive[playerHit] = false;
-                            int tempPos = alivePlayers.indexOf(playerHit);
-                            alivePlayers.remove(tempPos);
+                            alivePlayers.remove((Integer) playerHit);
                             for (int j = 0; j < numberOfPlayers; j++){
                                 serverToPlayer.put("Gameover", j,  playerHit);
                             }
