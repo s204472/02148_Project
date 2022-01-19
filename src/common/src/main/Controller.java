@@ -124,7 +124,11 @@ public class Controller implements Initializable {
                 int v = j;
                 pButtons[i][j].setOnAction(event -> handlePlayerClick(u, v));
                 pButtons[i][j].hoverProperty().addListener(event -> {
-                    showShipHover(u, v);
+                    try {
+                        showShipHover(u, v);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 });
 
                 pGrid.add(pButtons[i][j], i, j);
