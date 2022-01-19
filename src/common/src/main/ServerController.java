@@ -30,7 +30,10 @@ public class ServerController {
     @FXML
     private Label status;
     @FXML
-    public void handleExit(){
+    public void handleExit() throws InterruptedException {
+        for(int i = 0; i < numberOfPlayers; i++){
+            serverToPlayer.put("serverDisconnect", i);
+        }
         System.exit(0);
     }
     @FXML

@@ -49,7 +49,7 @@ public class Controller implements Initializable {
     public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}, {2, 3, 3, 4, 4, 5}};
     private Button[][] pButtons;
     private Button[][][] oButtons;
-
+    private boolean disconnect;
     private static int id, numberOfShipsToPlace, numberOfPlayers, size;
     private static RemoteSpace idSpace, serverToPlayer, playerToServer, chat;
     private boolean turn = false, gameOver = false;
@@ -89,6 +89,7 @@ public class Controller implements Initializable {
         ch.listen();
     }
     public void startListeners(){
+        listenForDisconnect();
         listenForTurn();
         listenForShots();
         listenForGameOver();
@@ -141,7 +142,7 @@ public class Controller implements Initializable {
     @FXML
     void handlePlayerClick(int x, int y) {
         try {
-            if(!shipsPlaced) {
+            if(!shipsPlaced && !disconnect) {
                 lStatusbar.setText("Place ships");
                 numberOfShipsPlaced += setShip(x, y, shipConfig[(numberOfShipsToPlace-2)][numberOfShipsPlaced]);
                 if (numberOfShipsToPlace == numberOfShipsPlaced) {
@@ -297,8 +298,28 @@ public class Controller implements Initializable {
         th.start();
     }
 
+    public void listenForDisconnect(){
+        Task<Void> task = new Task<>() {
+            @Override protected Void call() throws Exception {
+                serverToPlayer.get(new ActualField("serverDisconnect"),  new ActualField(id));
+                Platform.runLater(new Runnable() {
+                    @Override public void run() {
+                        disconnect = true;
+                        lStatusbar.setText("Server disconnected, unable to play further");
+                    }
+                });
+                return null;
+            }
+
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
+    }
+
 
     public int setShip(int x, int y, int i) {
+
         if(size < x + (rotated ? i : 0) || size < y + (rotated ? 0 : i) || board.shipInTheWay(x, y, i, rotated)) {
             return 0;
         } else {
@@ -310,8 +331,9 @@ public class Controller implements Initializable {
         }
     }
 
+
     public void showShipHover(int x, int y){
-        if (!shipsPlaced){
+        if (!shipsPlaced && !disconnect){
             int l = shipConfig[numberOfShipsToPlace - 2][numberOfShipsPlaced];
             if(!(size < x + (rotated ? l : 0) || size < y + (rotated ? 0 : l) || board.shipInTheWay(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
