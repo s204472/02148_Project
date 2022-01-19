@@ -1,5 +1,6 @@
 package common.src.main;
 
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -7,14 +8,20 @@ import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 import javafx.concurrent.Task;
+
+
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -56,6 +63,7 @@ public class Controller implements Initializable {
     private boolean turn, gameOver = false;
 
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resources) {
@@ -105,7 +113,9 @@ public class Controller implements Initializable {
                 pButtons[i][j].getStyleClass().add("fields");
                 int u = i, v = j;
                 pButtons[i][j].setOnAction(event -> handlePlayerClick(u, v));
-                pButtons[i][j].hoverProperty().addListener(event -> showShipHover(u, v));
+                pButtons[i][j].hoverProperty().addListener(event -> {
+                    showShipHover(u, v);
+                });
 
                 playerGrid.add(pButtons[i][j], i, j);
             }
@@ -142,8 +152,8 @@ public class Controller implements Initializable {
         try {
             if(!shipsPlaced) {
                 lStatusbar.setText("Place ships");
-                lengthOfCurrentShip = setShip(x, y, lengthOfCurrentShip);
-                if (lengthOfCurrentShip == (numberOfShips + 2)) {
+                numberOfShipsPlaced += setShip(x, y, shipConfig[(numberOfShipsToPlace-1)][numberOfShipsPlaced]);
+                if (numberOfShipsToPlace == numberOfShipsPlaced) {
                     lStatusbar.setText("Waiting for opponent to place ships");
                     playerToServer.put("Board", id, board);
                     shipsPlaced = true;
@@ -301,14 +311,15 @@ public class Controller implements Initializable {
                 board.placeShip(x + (rotated ? j : 0), y + (rotated ? 0 : j));
                 ui.showShip(pButtons, x + (rotated ? j : 0), y + (rotated ? 0 : j));
             }
-            return i + 1;
+            return 1;
         }
     }
 
-    public void showShipHover(int x, int y){
-        int l = lengthOfCurrentShip;
-        if (!shipsPlaced){
-            if(!(size < x + (rotated ? l : 0) || size < y + (rotated ? 0 : l) || board.shipInTheway(x, y, l, rotated))) {
+
+    public void showShipHover(int x, int y) {
+        int l = shipConfig[numberOfShipsToPlace - 1][numberOfShipsPlaced];
+        if (!shipsPlaced) {
+            if (!(SIZE < x + (rotated ? l : 0) || SIZE < y + (rotated ? 0 : l) || board.shipInTheWay(x, y, l, rotated))) {
                 for (int i = 0; i < l; i++) {
                     ui.toggleShipHover(pButtons[x + (rotated ? i : 0)][y + (rotated ? 0 : i)]);
                 }
