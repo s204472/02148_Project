@@ -2,6 +2,7 @@ package common.src.main;
 
 import javafx.scene.control.Button;
 
+// Class helper for basic styling of UI.
 public class UiHelper {
     public void toggleShipHover(Button b) {
         if (b.getStyleClass().contains("hover")) {

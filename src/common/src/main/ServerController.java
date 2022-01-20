@@ -80,6 +80,7 @@ public class ServerController {
         return x < 2 || x > 5;
     }
 
+    //Starts all the initializers for the server
     public void startGame() {
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
@@ -95,6 +96,8 @@ public class ServerController {
         th.setDaemon(true);
         th.start();
     }
+
+    //INITIALIZERS FOR TUPPPLESPACE, PLAYERS AND IDS
     public void initTupleSpaces(){
         SpaceRepository repo = new SpaceRepository();
         repo.addGate(Config.getURI());
@@ -114,6 +117,7 @@ public class ServerController {
         }
         Arrays.fill(playerXAlive, true);
     }
+
 
     public void initIds(int numberOfPlayers){
         try{
@@ -143,6 +147,7 @@ public class ServerController {
         } catch (InterruptedException e) {return null;}
     }
 
+    //This method runs shooting part of the game
     public void runGame(GameBoard[] gameBoardArray) throws InterruptedException{
         serverToPlayer.put("Start");
 

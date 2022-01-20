@@ -15,6 +15,7 @@ public class ChatHelper {
     RemoteSpace chat;
     VBox msgArea;
 
+    // Class for handling chat methods.
     public ChatHelper(int id, int numberOfPlayers, RemoteSpace chat, VBox msgArea){
         this.id = id;
         this.numberOfPlayers = numberOfPlayers;
@@ -49,6 +50,7 @@ public class ChatHelper {
         th.setDaemon(true);
         th.start();
     }
+
     public void send(String msg) {
         try {
             HBox msgContainer = new HBox();

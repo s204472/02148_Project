@@ -22,13 +22,11 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
+
+// This class is the controller class of a player instance. It handles connection between the server and the players UI.
 public class Controller implements Initializable {
-
-
     @FXML
     public GridPane pGrid, opponentBoardGrid;
-    @FXML
-    public GridPane[] opponentBoards;
     @FXML
     public Label lPlayer, lStatusbar;
     @FXML
@@ -40,13 +38,15 @@ public class Controller implements Initializable {
     @FXML
     public HBox widgetContainer;
 
+    public GridPane[] opponentBoards;
+
     private UiHelper ui = new UiHelper();
     private ChatHelper ch;
 
     public static boolean shipsPlaced = false;
     public static boolean rotated = false;
     public static GameBoard board;
-    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 5}};
+    public static int[][] shipConfig = {{2, 4}, {2, 3, 4}, {2, 3, 3, 4}, {2, 3, 3, 4, 4}};
     private Button[][] pButtons;
     private Button[][][] oButtons;
     private boolean disconnect;
@@ -56,10 +56,11 @@ public class Controller implements Initializable {
     private int numberOfShipsPlaced = 0;
     private ArrayList<Integer> otherPlayers = new ArrayList<Integer>();
 
+    // The initialize method, runs when the controller is initialized. Handles basic connections to server and sets everything up.
     @Override
     public void initialize(URL url, ResourceBundle resources) {
-
         try {
+            // Connect to tuple spaces.
             idSpace        = new RemoteSpace(Config.getURI("id"));
             serverToPlayer = new RemoteSpace(Config.getURI("serverToPlayer"));
             playerToServer = new RemoteSpace(Config.getURI("playerToServer"));
@@ -89,6 +90,8 @@ public class Controller implements Initializable {
         startListeners();
 
     }
+    // Game listeners. Listens for messages from the server on new threads.
+
     public void startListeners(){
         listenForDisconnect();
         listenForTurn();
@@ -96,7 +99,7 @@ public class Controller implements Initializable {
         listenForGameOver();
         listenForWin();
     }
-
+    // BOARD GENERATIONS.
     public void genPlayerBoard(int x, int y){
         pButtons = new Button[x][y];
         for (int i = 0; i < x; i++) {
@@ -138,7 +141,7 @@ public class Controller implements Initializable {
             }
         }
     }
-
+    // BUTTON CLICK HANDLERS.
     @FXML
     void handlePlayerClick(int x, int y) {
         try {
@@ -182,6 +185,7 @@ public class Controller implements Initializable {
         rotated = !rotated;
     }
 
+    // GAME LISTENERS.
     public void waitForOpnBoard(){
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
@@ -200,7 +204,7 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
-
+    // Listening for turn messages from server
     public void listenForTurn(){
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
@@ -223,6 +227,7 @@ public class Controller implements Initializable {
         th.setDaemon(true);
         th.start();
     }
+
     public void listenForGameOver(){
         Task<Void> task = new Task<>() {
             @Override protected Void call() throws Exception {
@@ -317,9 +322,8 @@ public class Controller implements Initializable {
         th.start();
     }
 
-
+    // Methods for ship placement.
     public int setShip(int x, int y, int i) {
-
         if(size < x + (rotated ? i : 0) || size < y + (rotated ? 0 : i) || board.shipInTheWay(x, y, i, rotated)) {
             return 0;
         } else {
@@ -330,8 +334,6 @@ public class Controller implements Initializable {
             return 1;
         }
     }
-
-
     public void showShipHover(int x, int y){
         if (!shipsPlaced && !disconnect){
             int l = shipConfig[numberOfShipsToPlace - 2][numberOfShipsPlaced];

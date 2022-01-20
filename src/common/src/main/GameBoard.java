@@ -4,6 +4,7 @@ public class GameBoard {
     private int size;
     private Field[][] board;
 
+    //Constructer to create the GameBoard for the game.
     public GameBoard(int size){
         this.size = size;
         this.board = new Field[size][size];
@@ -13,9 +14,10 @@ public class GameBoard {
             }
         }
     }
-
+    //Method to convert the fields into ship-fields.
     public void placeShip(int x, int y){ board[x][y].setShip(); }
 
+    //Controls if the game is over for the individual player
     public boolean isGameover() {
         for(int i = 0; i < size; i++){
             for(int j = 0; j < size; j++){
@@ -27,14 +29,17 @@ public class GameBoard {
         return true;
     }
 
+    //Marks the field the players have shot at
     public boolean setHit(int x, int y){
         return board[x][y].setHit();
     }
 
+    //Returns the status of the field
     public boolean getHit(int x, int y){
         return board[x][y].getHit();
     }
 
+    //Method to control placement of ships. It secures ships isn't placed on top of each other.
     public boolean shipInTheWay(int x, int y, int shipLength, boolean rotated) {
         boolean inTheWay;
         for(int i = 0; i < shipLength; i++){

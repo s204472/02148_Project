@@ -1,5 +1,6 @@
 package common.src.main;
 
+// This class represents a field on a board.
 public class Field {
     private boolean hit;
     private boolean isShip;
