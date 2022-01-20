@@ -21,6 +21,7 @@ public class ServerController {
     private static int numberOfShips, sizeOfMap;
     private static ArrayList<Integer> alivePlayers = new ArrayList<>();
     private static boolean[] playerXAlive;
+    private boolean playersInitted = false;
 
     @FXML
     private TextField customSize, customShips;
@@ -32,10 +33,13 @@ public class ServerController {
     private Label status;
     @FXML
     public void handleExit() throws InterruptedException {
-        for(int i = 0; i < numberOfPlayers; i++){
-            serverToPlayer.put("serverDisconnect", i);
+        if (playersInitted){
+            for(int i = 0; i < numberOfPlayers; i++){
+                serverToPlayer.put("serverDisconnect", i);
+            }
         }
         System.exit(0);
+
     }
     @FXML
     public void playerSelector(ActionEvent e) {
@@ -132,6 +136,7 @@ public class ServerController {
                     status.setText("All players connected. Keep server running.");
                 }
             });
+            playersInitted = true;
 
         } catch (Exception ignored){}
     }
